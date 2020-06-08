@@ -31,6 +31,11 @@ dependencies:
   firebase_core: ^0.4.0+9
   firebase_auth: ^0.14.0+5
   flutter_facebook_login: ^3.0.0
+  google_sign_in: ^4.0.11
+  flappy_search_bar: 1.4.1
+  flutter_signin_button: ^1.0.0
+  http: ^0.12.1
+  basic_utils: ^1.5.1
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +51,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

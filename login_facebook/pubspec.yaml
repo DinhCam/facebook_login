@@ -36,7 +36,9 @@ dependencies:
   flutter_signin_button: ^1.0.0
   http: ^0.12.1
   basic_utils: ^1.5.1
-
+  floating_search_bar: 0.3.0
+  equatable: ^0.2.0
+  flutter_bloc: ^0.11.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

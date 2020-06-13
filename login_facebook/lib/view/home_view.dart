@@ -18,6 +18,9 @@ class HomePage extends StatelessWidget {
       theme: new ThemeData(
         brightness: Brightness.dark,
         primaryColorBrightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.transparent,
+        canvasColor : Colors.black54
+
       ),
       home: new HomeScreen(),
     );
@@ -57,11 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
       new Scaffold(
         backgroundColor: Colors.transparent,
         bottomNavigationBar: new BottomNavigationBar(
+            type: BottomNavigationBarType.shifting,
             // BottomNavigationBa
             onTap: onTabTapped, // new
             currentIndex: currentIndex,
-            backgroundColor: Colors.black38,
-            fixedColor: Colors.red[38],
             items: [
               BottomNavigationBarItem(
                 icon: Image(

@@ -1,3 +1,4 @@
+
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,6 +19,9 @@ class HomePage extends StatelessWidget {
       theme: new ThemeData(
         brightness: Brightness.dark,
         primaryColorBrightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.transparent,
+        canvasColor : Colors.black54
+
       ),
       home: new HomeScreen(),
     );
@@ -57,11 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
       new Scaffold(
         backgroundColor: Colors.transparent,
         bottomNavigationBar: new BottomNavigationBar(
+            type: BottomNavigationBarType.shifting,
             // BottomNavigationBa
             onTap: onTabTapped, // new
             currentIndex: currentIndex,
-            backgroundColor: Colors.black38,
-            fixedColor: Colors.red[38],
             items: [
               BottomNavigationBarItem(
                 icon: Image(
@@ -420,3 +423,4 @@ class ListViewVertical extends StatelessWidget {
             }));
   }
 }
+

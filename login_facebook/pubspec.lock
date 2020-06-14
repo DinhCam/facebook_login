@@ -146,6 +146,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  flutter_firebase_iid:
+    dependency: "direct main"
+    description:
+      name: flutter_firebase_iid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   flutter_signin_button:
     dependency: "direct main"
     description:

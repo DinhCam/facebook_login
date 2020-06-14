@@ -1,4 +1,3 @@
-
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,20 +8,20 @@ import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
+import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/sign_in_view.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Audio Streaming',
       theme: new ThemeData(
-        brightness: Brightness.dark,
-        primaryColorBrightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.transparent,
-        canvasColor : Colors.black54
-
-      ),
+          brightness: Brightness.dark,
+          primaryColorBrightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.transparent,
+          canvasColor: Colors.black54),
       home: new HomeScreen(),
     );
   }
@@ -58,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width,
         fit: BoxFit.cover,
       ),
-      new Scaffold(
+      new Scaffold(       
         backgroundColor: Colors.transparent,
         bottomNavigationBar: new BottomNavigationBar(
             type: BottomNavigationBarType.shifting,
@@ -281,20 +280,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: new Row(
                           children: <Widget>[
                             new Container(
-                                  padding: const EdgeInsets.only(left: 00.0),
-                                  alignment: Alignment.topLeft,
-                                  child: new OutlineButton(
-                                      onPressed: () {
-                                        pageNumber++;
-                                        _playlistBloc
-                                            .getPlaylistWithPage(pageNumber);
-                                      },
-                                      borderSide:
-                                          BorderSide(color: Colors.transparent),
-                                      child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 0),
-                                          child: new Text("Next")))),
+                                padding: const EdgeInsets.only(left: 00.0),
+                                alignment: Alignment.topLeft,
+                                child: new OutlineButton(
+                                    onPressed: () {
+                                      pageNumber++;
+                                      _playlistBloc
+                                          .getPlaylistWithPage(pageNumber);
+                                    },
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 10, 0, 0),
+                                        child: new Text("Next")))),
                           ],
                         )),
                   ],
@@ -313,6 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ]);
   }
+
 
   void onTabTapped(int index) {
     setState(() {
@@ -401,7 +401,14 @@ class ListViewVertical extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: new OutlineButton(
                       splashColor: Colors.grey,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MediaPage(playlist: playlistsview[Index])),
+                        );
+                      },
                       borderSide: BorderSide(color: Colors.black),
                       child: Row(children: <Widget>[
                         Image(
@@ -423,4 +430,3 @@ class ListViewVertical extends StatelessWidget {
             }));
   }
 }
-

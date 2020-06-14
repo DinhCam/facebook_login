@@ -94,8 +94,8 @@ class _SignInScreen extends State<SignInScreen> {
                 Buttons.Facebook,
                 text: "Sign in with FaceBook",
                 onPressed: () {
-                  BlocProvider.of<AuthenticateBloc>(context).dispatch(
-                    SignInWithGoogle(),
+                  _authenticationBloc.dispatch(
+                    LoggedInWithFacebook(),
                   );
                 }, //on press
                 shape: RoundedRectangleBorder(

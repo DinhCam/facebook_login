@@ -6,7 +6,7 @@ import 'package:loginfacebook/network_provider/authentication_network_provider.d
 
 class PlayListNetWorkProvider {
   String baseUrl =
-      'https://audiostreaming-dev-as.azurewebsites.net/api/Playlists';
+      'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Playlists';
 
   List<Playlist> userFavoritePlaylists = new List();
   List<Playlist> top3playlist = new List();
@@ -14,7 +14,7 @@ class PlayListNetWorkProvider {
 
   Future<List<Playlist>> getUserFavoritePlaylists() async {
     String url =
-        'https://audiostreaming-dev-as.azurewebsites.net/api/Playlists/users';
+        'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Playlists/users';
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token

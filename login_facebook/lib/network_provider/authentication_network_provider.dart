@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 
@@ -18,10 +19,11 @@ String email;
 String imageUrl;
 String phoneNumber;
 UserAuthenticated currentUserWithToken ;
+final FirebaseMessaging _fcm = FirebaseMessaging();
 
 
 class AccountNetworkProvider{
-  String baseUrl ='https://audiostreaming-dev-as.azurewebsites.net/api/Account/';
+  String baseUrl ='https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Account/';
   
   Future<UserAuthenticated> fetchUser(String IdToken, String fcmToken) async {
   String authenticateUrl = baseUrl+ 'authenticate';
@@ -89,8 +91,10 @@ Future<UserAuthenticated> signInWithGoogle() async {
     email = user.email;
     imageUrl = user.photoUrl;
     final tokenId =await user.getIdToken();
-     final token = tokenId.token  ; 
-    currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, "Fcm token");
+    final token = tokenId.token ; 
+    print("khanh haha");
+    print(await _fcm.getToken());
+    currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
     prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {
       name = name.substring(0, name.indexOf(" "));
@@ -108,7 +112,7 @@ Future<UserAuthenticated> signInWithGoogle() async {
 Future<UserAuthenticated> loginWithFacebook() async {
   // Gọi hàm LogIn() với giá trị truyền vào là một mảng permission
   // Ở đây mình truyền vào cho nó quền xem email
-  //_facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
+  // _facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
 //    _facebooklogin.loginBehavior = FacebookLoginBehavior.nativeOnly;
 
   final result = await _facebooklogin.logIn(['email']);
@@ -123,16 +127,19 @@ Future<UserAuthenticated> loginWithFacebook() async {
     );
     // Lấy thông tin User qua credential có giá trị token đã đăng nhập
     final user = (await _auth.signInWithCredential(credential)).user;
+    
     assert(user.email != null);
     if (user.email == null) {
+      print("abc");
       return null;
     } else {
+      print("avx");
       name = user.displayName;
       phoneNumber = user.phoneNumber;
       email = user.email;
       imageUrl = user.photoUrl;
       final tokenId =await user.getIdToken();
-      currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.toString(), "Fcm token");
+      currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
       if (name.contains(" ")) {
         name = name.substring(0, name.indexOf(" "));
       }

@@ -30,14 +30,11 @@ class PlaylistBloc {
   } 
   void getUserFavoritesPlaylist() async{
     final tmp = await  _playlistRepository.getUserFavoritesPlaylist();
-    print("khanh 1");
-    print(tmp);
     favotite_sink.add(tmp);
   } 
   void getPlaylistWithPage(int page) async{
     final tmp = await  _playlistRepository.getPlaylists(page);
-    print("khanh 2");
-    print(tmp);
     playlistWIthPage_sink.add(tmp);
   } 
+  
 }

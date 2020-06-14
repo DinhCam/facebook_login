@@ -6,12 +6,12 @@ import 'package:loginfacebook/network_provider/authentication_network_provider.d
 
 class MediaNetWorkProvider {
   String baseUrl =
-      'https://audiostreaming-dev-as.azurewebsites.net/api/Media/';
+      'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Media/';
 
   List<Media> listMedia = new List();
 
-  Future<List<Media>> getMediaByplaylistId(String playlistId) async {
-    String url = baseUrl + playlistId;
+  Future<List<Media>> getMediaByplaylistId(String playlistId,bool isSort, bool isDesending, bool isPaging, int pageNumber, int pageLimit, int typeMedia ) async {
+    String url = baseUrl + playlistId +"?IsSort="+ isSort.toString() +"&IsDescending="+ isDesending.toString() +"&IsPaging="+ isPaging.toString() +"&Type="+ typeMedia.toString();
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token

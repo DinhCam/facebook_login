@@ -15,8 +15,8 @@ class MediaBloc {
       : assert(mediaRepository != null),
         _mediaRepository = mediaRepository;
 
-  void getMediaByPlaylistId(String playlistId) async{
-    final tmp = await _mediaRepository.getMediaByplaylistId(playlistId);
+  void getMediaByPlaylistId(String playlistId,bool isSort, bool isDesending, bool isPaging, int pageNumber, int pageLimit, int typeMedia ) async{
+    final tmp = await _mediaRepository.getMediaByplaylistId(playlistId, isSort, isDesending, isPaging, pageNumber, pageLimit, typeMedia );
     media_sink.add(tmp);
   } 
   

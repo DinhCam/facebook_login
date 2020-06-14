@@ -1,7 +1,6 @@
 class UserAuthenticated
     {
         String Id ;
-        String Username ;
         String FullName ;
         String PhoneNumber ;
         String Email ;
@@ -15,7 +14,6 @@ class UserAuthenticated
         UserAuthenticated(
           {
             this.Id,
-            this.Username,
             this.FullName,
             this.PhoneNumber,
             this.Email,
@@ -30,7 +28,6 @@ class UserAuthenticated
         factory UserAuthenticated.fromJson(Map<String, dynamic> json) {
           return UserAuthenticated(
             Id: json['userId'],
-            Username: json['username'],
             FullName: json['fullName'],
             PhoneNumber: json['phoneNumber'],
             Email: json['email'],

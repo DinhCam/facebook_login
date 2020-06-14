@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -92,8 +93,6 @@ Future<UserAuthenticated> signInWithGoogle() async {
     imageUrl = user.photoUrl;
     final tokenId =await user.getIdToken();
     final token = tokenId.token ; 
-    print("khanh haha");
-    print(await _fcm.getToken());
     currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
     prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {
@@ -110,11 +109,12 @@ Future<UserAuthenticated> signInWithGoogle() async {
 }
 
 Future<UserAuthenticated> loginWithFacebook() async {
+try{
+
   // Gọi hàm LogIn() với giá trị truyền vào là một mảng permission
   // Ở đây mình truyền vào cho nó quền xem email
-  // _facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
+  _facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
 //    _facebooklogin.loginBehavior = FacebookLoginBehavior.nativeOnly;
-
   final result = await _facebooklogin.logIn(['email']);
   // Kiểm tra nếu login thành công thì thực hiện login Firebase
   // (theo mình thì cách này đơn giản hơn là dùng đường dẫn
@@ -127,26 +127,22 @@ Future<UserAuthenticated> loginWithFacebook() async {
     );
     // Lấy thông tin User qua credential có giá trị token đã đăng nhập
     final user = (await _auth.signInWithCredential(credential)).user;
-    
-    assert(user.email != null);
-    if (user.email == null) {
-      print("abc");
-      return null;
-    } else {
-      print("avx");
+   
       name = user.displayName;
       phoneNumber = user.phoneNumber;
-      email = user.email;
+      //email = user.email;
       imageUrl = user.photoUrl;
       final tokenId =await user.getIdToken();
       currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
       if (name.contains(" ")) {
         name = name.substring(0, name.indexOf(" "));
       }
-    }
     return currentUserWithToken;
   }
-
+  print("object");
+}catch(e){
+print(e);
+}
 }
   Future logout() async {
     await _auth.signOut();

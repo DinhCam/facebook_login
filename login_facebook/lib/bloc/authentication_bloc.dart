@@ -53,7 +53,11 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
 
   Stream<AuthenticationState> _mapLoggedInWithFacebookToState() async* {
     try {
-      yield Authenticated(await accountRepository.LogInWithFacebook());
+      user = await accountRepository.LogInWithFacebook();
+      if (user != null) {
+        user_sink.add(user);
+        yield Authenticated(user);
+      }
     } catch (_) {
       yield Unauthenticated();
     }

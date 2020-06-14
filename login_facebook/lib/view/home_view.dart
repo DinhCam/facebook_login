@@ -5,7 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
 import 'package:loginfacebook/bloc/authentication_event.dart';
+import 'package:loginfacebook/bloc/home_page_event.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
+import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
@@ -19,12 +21,10 @@ class HomePage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Audio Streaming',
       theme: new ThemeData(
-        brightness: Brightness.dark,
-        primaryColorBrightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.transparent,
-        canvasColor : Colors.black54
-
-      ),
+          brightness: Brightness.light,
+          primaryColorBrightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.transparent,
+          canvasColor: Colors.black54),
       home: new HomeScreen(),
     );
   }
@@ -36,7 +36,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  PlaylistBloc _playlistBloc;
+  HomePageBloc _homePageBloc;
   AuthenticateBloc _authenticateBloc;
   int pageNumber = 1;
   final FirebaseMessaging _fcm = FirebaseMessaging();
@@ -45,10 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _authenticateBloc =
         AuthenticateBloc(accountRepository: AccountRepository());
-    _playlistBloc = PlaylistBloc(playlistRepository: PlaylistRepository());
-    _playlistBloc.getTop3Playlist();
-    _playlistBloc.getUserFavoritesPlaylist();
-    _playlistBloc.getPlaylistWithPage(pageNumber);
+    _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
+    _homePageBloc.dispatch(PageCreate());
 
     _fcm.configure(
           onMessage: (Map<String, dynamic> message) async {
@@ -78,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
             // TODO optional
         },
       );
+    _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
+    _homePageBloc.dispatch(PageCreate());
   }
 
   @override
@@ -90,7 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width,
         fit: BoxFit.cover,
       ),
-      new Scaffold(       
+      new Scaffold(
+        appBar: AppBar(
+          title: Text("Home"),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search), onPressed: () {
+              showSearch(context: context, delegate: DataSearch());
+            })
+          ],
+          backgroundColor: Colors.black26
+        ),
         backgroundColor: Colors.transparent,
         bottomNavigationBar: new BottomNavigationBar(
             type: BottomNavigationBarType.shifting,
@@ -143,34 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: new ListView(children: <Widget>[
           Row(
             children: <Widget>[
-              new Container(
-                alignment: Alignment.center,
-                width: 90,
-                height: 80,
-                child: new Text(
-                  "Home",
-                  style: new TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              new Container(
-                  width: MediaQuery.of(context).size.width - 90 - 70,
-                  height: 80,
-                  child: new SearchBar(
-                    onSearch: search,
-                    onItemFound: (Post post, int index) {
-                      return ListTile(
-                        title: Text(post.title),
-                        subtitle: Text(post.description),
-                      );
-                    },
-                    hintText: "Search",
-                    searchBarStyle: SearchBarStyle(
-                      backgroundColor: Colors.white10,
-                    ),
-                  )),
+            
               new Container(
                   width: 70,
                   height: 70,
@@ -226,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   StreamBuilder<List<Playlist>>(
-                    stream: _playlistBloc.stream_favotite,
+                    stream: _homePageBloc.stream_favotite,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
                       return snapshot.hasData
@@ -254,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   StreamBuilder<List<Playlist>>(
-                    stream: _playlistBloc.stream_top3,
+                    stream: _homePageBloc.stream_top3,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
                       return snapshot.hasData
@@ -267,31 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
           new Container(
               padding: const EdgeInsets.only(top: 10.0),
               child: Column(children: <Widget>[
-                new Row(
-                  children: <Widget>[
-                    new Container(
-                        margin: const EdgeInsets.only(right: 30),
-                        width: 100,
-                        color: Colors.blue,
-                        child: new Row(
-                          children: <Widget>[
-                            if (pageNumber > 0)
-                              (new Container(
-                                  alignment: Alignment.topLeft,
-                                  child: new OutlineButton(
-                                      onPressed: () {
-                                        pageNumber--;
-                                        _playlistBloc
-                                            .getPlaylistWithPage(pageNumber);
-                                      },
-                                      borderSide:
-                                          BorderSide(color: Colors.transparent),
-                                      child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 10, 0, 0),
-                                          child: new Text("Previuos"))))),
-                          ],
-                        )),
                     new Container(
                       alignment: Alignment.topCenter,
                       // margin: const EdgeInsets.only(left: 30, right: 0, top: 260),
@@ -305,34 +262,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    new Container(
-                        margin: const EdgeInsets.only(left: 30),
-                        alignment: Alignment.topRight,
-                        width: 100,
-                        color: Colors.blue,
-                        child: new Row(
-                          children: <Widget>[
-                            new Container(
-                                padding: const EdgeInsets.only(left: 00.0),
-                                alignment: Alignment.topLeft,
-                                child: new OutlineButton(
-                                    onPressed: () {
-                                      pageNumber++;
-                                      _playlistBloc
-                                          .getPlaylistWithPage(pageNumber);
-                                    },
-                                    borderSide:
-                                        BorderSide(color: Colors.transparent),
-                                    child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 10, 0, 0),
-                                        child: new Text("Next")))),
-                          ],
-                        )),
-                  ],
-                ),
                 StreamBuilder<List<Playlist>>(
-                  stream: _playlistBloc.stream_playlistWIthPage,
+                  stream: _homePageBloc.stream_playlistWIthPage,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) print(snapshot.error);
                     return snapshot.hasData
@@ -461,5 +392,62 @@ class ListViewVertical extends StatelessWidget {
                         )
                       ])));
             }));
+  }
+}
+
+class DataSearch extends SearchDelegate<String> {
+  SearchPlaylistBloc _searchPlaylistBloc = SearchPlaylistBloc(playlistRepository: PlaylistRepository());
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    // TODO: implement buildActions
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: (){
+          query="";
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
+        ),
+        onPressed: () {
+          close(context, null);
+        });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return  StreamBuilder<List<Playlist>>(
+        stream: _searchPlaylistBloc.stream_playlistWIthPage,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          return snapshot.hasData
+              ? ListViewVertical(playlistsview: snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
+      );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+   _searchPlaylistBloc.getPlaylistsBySearchkey(query);
+    query.isEmpty?_searchPlaylistBloc.getPlaylistsBySearchkey(""):_searchPlaylistBloc.getPlaylistsBySearchkey(query);
+    return  StreamBuilder<List<Playlist>>(
+        stream: _searchPlaylistBloc.stream_playlistWIthPage,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+          return snapshot.hasData
+              ? ListViewVertical(playlistsview: snapshot.data)
+              : Center(child: CircularProgressIndicator());
+        },
+      );
+    
   }
 }

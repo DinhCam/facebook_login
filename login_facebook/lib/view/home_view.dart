@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PlaylistBloc _playlistBloc;
   AuthenticateBloc _authenticateBloc;
   int pageNumber = 1;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
   @override
   void initState() {
     super.initState();
@@ -45,6 +47,35 @@ class _HomeScreenState extends State<HomeScreen> {
     _playlistBloc.getTop3Playlist();
     _playlistBloc.getUserFavoritesPlaylist();
     _playlistBloc.getPlaylistWithPage(pageNumber);
+
+    _fcm.configure(
+          onMessage: (Map<String, dynamic> message) async {
+            print("onMessage: $message");
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                        content: ListTile(
+                        title: Text(message['notification']['title']),
+                        subtitle: Text(message['notification']['body']),
+                        ),
+                        actions: <Widget>[
+                        FlatButton(
+                            child: Text('Ok'),
+                            onPressed: () => Navigator.of(context).pop(),
+                        ),
+                    ],
+                ),
+            );
+        },
+        onLaunch: (Map<String, dynamic> message) async {
+            print("onLaunch: $message");
+            // TODO optional
+        },
+        onResume: (Map<String, dynamic> message) async {
+            print("onResume: $message");
+            // TODO optional
+        },
+      );
   }
 
   @override

@@ -19,10 +19,12 @@ class HomePage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Audio Streaming',
       theme: new ThemeData(
-          brightness: Brightness.dark,
-          primaryColorBrightness: Brightness.dark,
-          scaffoldBackgroundColor: Colors.transparent,
-          canvasColor: Colors.black54),
+        brightness: Brightness.dark,
+        primaryColorBrightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.transparent,
+        canvasColor : Colors.black54
+
+      ),
       home: new HomeScreen(),
     );
   }

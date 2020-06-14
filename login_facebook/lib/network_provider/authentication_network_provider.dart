@@ -92,8 +92,6 @@ Future<UserAuthenticated> signInWithGoogle() async {
     imageUrl = user.photoUrl;
     final tokenId =await user.getIdToken();
     final token = tokenId.token ; 
-    print("khanh haha");
-    print(await _fcm.getToken());
     currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
     prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {

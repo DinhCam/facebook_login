@@ -152,7 +152,46 @@ class _HomeScreenState extends State<HomeScreen> {
             child: new ListView(children: <Widget>[
           Row(
             children: <Widget>[
-            
+             new Container(
+                  width: 70,
+                  height: 70,
+                  child: new OutlineButton(
+                      splashColor: Colors.grey,
+                      onPressed: () {
+                        _fcm.subscribeToTopic("IU");
+                      },
+                      borderSide: BorderSide(color: Colors.transparent),
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image(
+                                    image: AssetImage("assets/filled-like.png"),
+                                    height: 35.0,
+                                    fit: BoxFit.fitHeight),
+                              ])))),
+                              new Container(
+                  width: 70,
+                  height: 70,
+                  child: new OutlineButton(
+                      splashColor: Colors.grey,
+                      onPressed: () {
+                        _fcm.unsubscribeFromTopic("IU");
+                      },
+                      borderSide: BorderSide(color: Colors.transparent),
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image(
+                                    image: AssetImage("assets/icons8-heart-64.png"),
+                                    height: 35.0,
+                                    fit: BoxFit.fitHeight),
+                              ])))),
               new Container(
                   width: 70,
                   height: 70,
@@ -286,22 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentIndex = 0;
 
-  Future<List<Post>> search(String search) async {
-    await Future.delayed(Duration(seconds: 2));
-    return List.generate(search.length, (int index) {
-      return Post(
-        "Title : $search $index",
-        "Description :$search $index",
-      );
-    });
-  }
-}
 
-class Post {
-  final String title;
-  final String description;
-
-  Post(this.title, this.description);
 }
 
 class ListViewHorizontal extends StatelessWidget {
@@ -321,7 +345,14 @@ class ListViewHorizontal extends StatelessWidget {
               return new Container(
                   child: new OutlineButton(
                       splashColor: Colors.grey,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MediaPage(playlist: playlistsview[Index])),
+                        );
+                      },
                       borderSide: BorderSide(color: Colors.transparent),
                       child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),

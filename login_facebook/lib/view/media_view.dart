@@ -188,5 +188,6 @@ class _MediaViewState extends State<MediaView> {
     setState(() {
       currentIndex = index;
     });
+    
   }
 }

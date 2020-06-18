@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/authentication_state.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/view/home_view.dart';
 

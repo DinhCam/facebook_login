@@ -1,11 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
-import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/home_page_event.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
 import 'package:loginfacebook/model/playlist.dart';
@@ -40,6 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthenticateBloc _authenticateBloc;
   int pageNumber = 1;
   final FirebaseMessaging _fcm = FirebaseMessaging();
+  List<Playlist> myFavorite;
+  
+  
   @override
   void initState() {
     super.initState();
@@ -76,8 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // TODO optional
         },
       );
-    _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
-    _homePageBloc.dispatch(PageCreate());
+    
   }
 
   @override
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text("Home"),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.search), onPressed: () {
-              showSearch(context: context, delegate: DataSearch());
+              showSearch(context: context, delegate: DataSearch(myFavorite: myFavorite));
             })
           ],
           backgroundColor: Colors.black26
@@ -250,8 +250,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     stream: _homePageBloc.stream_favotite,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
+                      myFavorite=snapshot.data;
                       return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data)
+                          ? ListViewHorizontal(playlistsview: snapshot.data, myFavorite: myFavorite,)
                           : Center(child: CircularProgressIndicator());
                     },
                   )
@@ -279,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
                       return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data)
+                          ? ListViewHorizontal(playlistsview: snapshot.data, myFavorite: myFavorite,)
                           : Center(child: CircularProgressIndicator());
                     },
                   )
@@ -306,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) print(snapshot.error);
                     return snapshot.hasData
-                        ? ListViewVertical(playlistsview: snapshot.data)
+                        ? ListViewVertical(playlistsview: snapshot.data, myFavorite: myFavorite,)
                         : Center(child: CircularProgressIndicator());
                   },
                 )
@@ -329,11 +330,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class ListViewHorizontal extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
-  ListViewHorizontal({Key key, this.playlistsview}) : super(key: key);
+  List<Playlist> playlistsview;
+  List<Playlist> myFavorite;
+  ListViewHorizontal({Key key, this.playlistsview, this.myFavorite}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    HomePageBloc homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
     return Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
@@ -350,7 +352,7 @@ class ListViewHorizontal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index])),
+                                  MediaPage(playlist: playlistsview[Index] , listMyFavorite: myFavorite)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.transparent),
@@ -372,9 +374,9 @@ class ListViewHorizontal extends StatelessWidget {
 }
 
 class ListViewVertical extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
-  ListViewVertical({Key key, this.playlistsview}) : super(key: key);
+  List<Playlist> playlistsview ;
+  List<Playlist> myFavorite;
+  ListViewVertical({Key key, this.playlistsview, this.myFavorite}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -401,7 +403,7 @@ class ListViewVertical extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index])),
+                                  MediaPage(playlist: playlistsview[Index], listMyFavorite: myFavorite,)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),
@@ -427,6 +429,8 @@ class ListViewVertical extends StatelessWidget {
 }
 
 class DataSearch extends SearchDelegate<String> {
+  List<Playlist> myFavorite;
+  DataSearch({Key key, this.myFavorite});
   SearchPlaylistBloc _searchPlaylistBloc = SearchPlaylistBloc(playlistRepository: PlaylistRepository());
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -460,7 +464,7 @@ class DataSearch extends SearchDelegate<String> {
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           return snapshot.hasData
-              ? ListViewVertical(playlistsview: snapshot.data)
+              ? ListViewVertical(playlistsview: snapshot.data,)
               : Center(child: CircularProgressIndicator());
         },
       );

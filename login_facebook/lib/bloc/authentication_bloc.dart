@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/authentication_state.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:bloc/bloc.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/media_bloc.dart';
+import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
@@ -7,8 +8,9 @@ import 'package:loginfacebook/repository/media_repository.dart';
 import 'home_view.dart';
 
 class MediaPage extends StatelessWidget {
-  Playlist playlist = new Playlist();
-  MediaPage({Key key, @required this.playlist}) : super(key: key);
+  Playlist playlist;
+  List<Playlist> listMyFavorite;
+  MediaPage({Key key, @required this.playlist, @required this.listMyFavorite}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +22,15 @@ class MediaPage extends StatelessWidget {
           primaryColorBrightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.transparent,
           canvasColor: Colors.black54),
-      home: new MediaView(playlist: playlist),
+      home: new MediaView(playlist: playlist,listMyFavorite: listMyFavorite),
     );
   }
 }
 
 class MediaView extends StatefulWidget {
-  Playlist playlist = new Playlist();
-  MediaView({Key key, @required this.playlist}) : super(key: key);
+  Playlist playlist;
+  List<Playlist> listMyFavorite;
+  MediaView({Key key, @required this.playlist, @required this.listMyFavorite}) : super(key: key);
   @override
   _MediaViewState createState() => _MediaViewState();
 }
@@ -36,13 +39,17 @@ class _MediaViewState extends State<MediaView> {
   MediaBloc _mediaBloc;
   List<Media> listMedia = new List();
 
+  bool isPress=false;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
-    _mediaBloc.getMediaByPlaylistId(
-        widget.playlist.Id, true, false, false, 0, 1, 1);
+    
+    _mediaBloc.dispatch(PageCreateMedia(playlist: widget.playlist,listFavorite: widget.listMyFavorite));
+    
+    
   }
 
   @override
@@ -62,53 +69,6 @@ class _MediaViewState extends State<MediaView> {
             },
           ),
         ),
-        bottomNavigationBar: new BottomNavigationBar(
-            type: BottomNavigationBarType.shifting,
-            // BottomNavigationBa
-            onTap: onTabTapped, // new
-            currentIndex: currentIndex,
-            items: [
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/icons8-home-page-64.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Home",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/icons8-favorite-folder-64.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Favorite",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/qr-code.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Check in",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/userinfo.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Profile",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              )
-            ]),
         body: new Column(children: <Widget>[
           new Container(
             decoration: BoxDecoration(
@@ -137,9 +97,18 @@ class _MediaViewState extends State<MediaView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       new Text(widget.playlist.PlaylistName, style: TextStyle(fontSize: 26.0),),
-                      new IconButton(
-                          icon: new Icon(Icons.favorite, color: Colors.red, size: 45,),
-                          onPressed: null)
+                      StreamBuilder(
+                        stream: _mediaBloc.addPlaylist_stream,
+                        builder: (context, snapshot){
+                          if (snapshot.hasData) {
+                            
+                            return buildBt(snapshot.data);
+                          } else if (snapshot.hasError) {
+                            return Text(snapshot.error.toString());
+                          }
+                          return Center(child: CircularProgressIndicator());
+                        },
+                      )
                     ],
                   ),
                 )
@@ -182,12 +151,20 @@ class _MediaViewState extends State<MediaView> {
         }),
     );
   }
-
-  int currentIndex = 0;
-  void onTabTapped(int index) {
-    setState(() {
-      currentIndex = index;
-    });
-    
+  Widget buildBt(snapshot){
+    return new FlatButton(
+      color: snapshot? Colors.green : Colors.red,
+      disabledColor: Colors.grey,
+      disabledTextColor: Colors.black,
+      padding: EdgeInsets.all(8.0),
+      splashColor: Colors.blueAccent,
+      onPressed: () {
+        _mediaBloc.dispatch(AddPlaylistToMyList(isMyList: snapshot, listFavorite: widget.listMyFavorite, playlist: widget.playlist));
+      },
+      child: Text(
+        "+Add Playlist",
+        style: TextStyle(fontSize: 20.0),
+      ),);
   }
+
 }

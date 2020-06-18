@@ -10,8 +10,8 @@ class MediaNetWorkProvider {
 
   List<Media> listMedia = new List();
 
-  Future<List<Media>> getMediaByplaylistId(String playlistId,bool isSort, bool isDesending, bool isPaging, int pageNumber, int pageLimit, int typeMedia ) async {
-    String url = baseUrl + playlistId +"?IsSort="+ isSort.toString() +"&IsDescending="+ isDesending.toString() +"&IsPaging="+ isPaging.toString() +"&Type="+ typeMedia.toString();
+  Future<List<Media>> getMediaByplaylistId(String playlistId,int sortType, bool isPaging, int pageNumber, int pageLimit, int typeMedia ) async {
+    String url = baseUrl + playlistId +"?SortType="+ sortType.toString()+"&IsPaging="+ isPaging.toString() +"&Type="+ typeMedia.toString();
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token

@@ -11,6 +11,10 @@ class Media {
   String Author;
   String Singer;
   int Type;
+  // List Category;
+//  List get getCategory => Category;
+
+//  set setCategory(List Category) => this.Category = Category;
   String get getId => Id;
 
   set setId(String Id) => this.Id = Id;
@@ -59,7 +63,8 @@ class Media {
 
   set setType(int Type) => this.Type = Type;
   Media(
-      {this.Id,
+      {
+      this.Id,
       this.MusicName,
       this.CreateBy,
       this.ImageUrl,
@@ -70,8 +75,12 @@ class Media {
       this.Author,
       this.Singer,
       this.Type,
-      this.Url});
+      this.Url,
+      // this.Category
+      }
+  );
   factory Media.fromJson(Map<String, dynamic> json) {
+    // List listCateName= json['']
     return new Media(
         Id: json['Id'],
         MusicName: json['MusicName'],
@@ -85,5 +94,6 @@ class Media {
         ModifyDate: json['ModifyDate'],
         Singer: json['Singer'],
         Type: json['Type']);
+        
   }
 }

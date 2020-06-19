@@ -1,3 +1,5 @@
+import 'package:loginfacebook/model/category_media.dart';
+
 class Media {
   String Id;
   String MusicName;
@@ -11,10 +13,11 @@ class Media {
   String Author;
   String Singer;
   int Type;
-  // List Category;
-//  List get getCategory => Category;
+  List<CategoryMedia> ListCategoryMedia;
+ List get getListCategoryMedia => ListCategoryMedia;
 
-//  set setCategory(List Category) => this.Category = Category;
+ set setListCategoryMedia(List ListCategoryMedia) => this.ListCategoryMedia = ListCategoryMedia;
+  
   String get getId => Id;
 
   set setId(String Id) => this.Id = Id;
@@ -62,23 +65,21 @@ class Media {
   int get getType => Type;
 
   set setType(int Type) => this.Type = Type;
-  Media(
-      {
-      this.Id,
-      this.MusicName,
-      this.CreateBy,
-      this.ImageUrl,
-      this.IsDelete,
-      this.ModifyBy,
-      this.CreateDate,
-      this.ModifyDate,
-      this.Author,
-      this.Singer,
-      this.Type,
-      this.Url,
-      // this.Category
-      }
-  );
+  Media({
+    this.Id,
+    this.MusicName,
+    this.CreateBy,
+    this.ImageUrl,
+    this.IsDelete,
+    this.ModifyBy,
+    this.CreateDate,
+    this.ModifyDate,
+    this.Author,
+    this.Singer,
+    this.Type,
+    this.Url,
+    this.ListCategoryMedia
+  });
   factory Media.fromJson(Map<String, dynamic> json) {
     // List listCateName= json['']
     return new Media(
@@ -93,7 +94,14 @@ class Media {
         CreateDate: json['CreateDate'],
         ModifyDate: json['ModifyDate'],
         Singer: json['Singer'],
-        Type: json['Type']);
-        
+        Type: json['Type'],
+        ListCategoryMedia: parseCategoryMedia(json)
+        );
+  }
+  static List<CategoryMedia> parseCategoryMedia(jsonCategoryMedia){
+    var list = jsonCategoryMedia['CategoryMedia'] as List;
+    List<CategoryMedia> categoryMediaList=
+      list.map((e) => CategoryMedia.fromJson(e)).toList();
+      return categoryMediaList;
   }
 }

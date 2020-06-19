@@ -11,6 +11,8 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   UserAuthenticated user;
 
   final _userStreamController = StreamController<UserAuthenticated>();
+  
+ 
 
   StreamSink<UserAuthenticated> get user_sink => _userStreamController.sink;
 // expose data from stream
@@ -40,7 +42,7 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
       final isSignedIn = await accountRepository.CheckLogin();
-      if (isSignedIn == true) {
+      if (isSignedIn == true){        
           user_sink.add(user);
           yield Authenticated(user);
       } else {
@@ -54,7 +56,7 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapLoggedInWithFacebookToState() async* {
     try {
       user = await accountRepository.LogInWithFacebook();
-      if (user != null) {
+      if (user != null) {       
         user_sink.add(user);
         yield Authenticated(user);
       }
@@ -66,7 +68,7 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   Stream<AuthenticationState> _mapSignInwithGoogleToState() async* {
     try {
       user = await accountRepository.SignInWithGoogle();
-      if (user != null) {
+      if (user != null) {       
         user_sink.add(user);
         yield Authenticated(user);
       }else Unauthenticated();
@@ -79,4 +81,5 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
     yield Unauthenticated();
     accountRepository.SignOut();
   }
+  
 }

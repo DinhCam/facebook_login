@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/playlist.dart';
+import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:loginfacebook/states/media_state.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
@@ -9,10 +10,12 @@ import 'package:bloc/bloc.dart';
 
 class MediaBloc extends Bloc<MediaEvent, MediaState>{
   MediaRepository _mediaRepository = MediaRepository();
+  PlaylistRepository _playlistRepository = new PlaylistRepository();
 
   final _mediaController = StreamController<List<Media>>();
   StreamSink<List<Media>> get media_sink => _mediaController.sink;
   Stream<List<Media>> get media_stream => _mediaController.stream;
+
 
   final _addPlaylistToMyFavoriteController = StreamController();
   StreamSink get addPlaylist_sink => _addPlaylistToMyFavoriteController.sink;
@@ -27,17 +30,15 @@ class MediaBloc extends Bloc<MediaEvent, MediaState>{
     final rs = await _mediaRepository.getMediaByplaylistId(playlistId, sortType, isPaging, pageNumber, pageLimit, typeMedia );
     media_sink.add(rs);
   }
-  void getStatusForButton( Playlist playlist, List<Playlist> listPlaylist){
+  void getStatusForButton( Playlist playlist) async{
     bool flag = false;
+    var listPlaylist=await _playlistRepository.getUserFavoritesPlaylist();
     if(listPlaylist!=null){
       listPlaylist.forEach((e) {
       if(e.Id == playlist.Id){    
         flag = true;
       }
-      print("co khanh");
     }); 
-    }else{
-      print("null khanh");
     }
     if(flag){
       addPlaylist_sink.add(true);
@@ -45,20 +46,21 @@ class MediaBloc extends Bloc<MediaEvent, MediaState>{
       addPlaylist_sink.add(false);
     }
     
-  }
-  void addplaylist(Playlist playlist, List<Playlist> listPlaylist, bool isMyList){
-    if(listPlaylist == null){
-      listPlaylist = new List();
-    }
     
-      if(isMyList){
-        listPlaylist.remove(playlist);
-        addPlaylist_sink.add(!isMyList);
-      }else{
-        listPlaylist.add(playlist);
-        addPlaylist_sink.add(!isMyList);
-      }
-      
+  }
+  void addplaylist(Playlist playlist, bool isMyList){
+    // if(listPlaylist == null){
+    //   listPlaylist = new List();
+    // }
+    
+    //   if(isMyList){
+    //     listPlaylist.remove(playlist);
+    //     addPlaylist_sink.add(!isMyList);
+    //   }else{
+    //     listPlaylist.add(playlist);
+    //     addPlaylist_sink.add(!isMyList);
+    //   }
+      addPlaylist_sink.add(!isMyList);
     
     
   }
@@ -71,10 +73,10 @@ class MediaBloc extends Bloc<MediaEvent, MediaState>{
   Stream<MediaState> mapEventToState(MediaEvent event) async*{
     if(event is PageCreateMedia){
       await getMediaByPlaylistId(event.playlist.Id, 1, false, 0, 0, 1);
-      await getStatusForButton(event.playlist, event.listFavorite);
+      await getStatusForButton(event.playlist);
       yield CreatePageMediaState();
     }else if(event is AddPlaylistToMyList){
-      await addplaylist(event.playlist, event.listFavorite, event.isMyList);
+      await addplaylist(event.playlist, event.isMyList);
       yield AddButton();
     }
   } 

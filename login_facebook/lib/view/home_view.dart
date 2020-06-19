@@ -38,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthenticateBloc _authenticateBloc;
   int pageNumber = 1;
   final FirebaseMessaging _fcm = FirebaseMessaging();
-  List<Playlist> myFavorite;
   
   
   @override
@@ -95,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text("Home"),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.search), onPressed: () {
-              showSearch(context: context, delegate: DataSearch(myFavorite: myFavorite));
+              showSearch(context: context, delegate: DataSearch());
             })
           ],
           backgroundColor: Colors.black26
@@ -250,9 +249,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     stream: _homePageBloc.stream_favotite,
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
-                      myFavorite=snapshot.data;
                       return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data, myFavorite: myFavorite,)
+                          ? ListViewHorizontal(playlistsview: snapshot.data)
                           : Center(child: CircularProgressIndicator());
                     },
                   )
@@ -280,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
                       return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data, myFavorite: myFavorite,)
+                          ? ListViewHorizontal(playlistsview: snapshot.data)
                           : Center(child: CircularProgressIndicator());
                     },
                   )
@@ -307,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) print(snapshot.error);
                     return snapshot.hasData
-                        ? ListViewVertical(playlistsview: snapshot.data, myFavorite: myFavorite,)
+                        ? ListViewVertical(playlistsview: snapshot.data)
                         : Center(child: CircularProgressIndicator());
                   },
                 )
@@ -331,8 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class ListViewHorizontal extends StatelessWidget {
   List<Playlist> playlistsview;
-  List<Playlist> myFavorite;
-  ListViewHorizontal({Key key, this.playlistsview, this.myFavorite}) : super(key: key);
+  ListViewHorizontal({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     HomePageBloc homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
@@ -352,7 +349,7 @@ class ListViewHorizontal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index] , listMyFavorite: myFavorite)),
+                                  MediaPage(playlist: playlistsview[Index])),
                         );
                       },
                       borderSide: BorderSide(color: Colors.transparent),
@@ -375,8 +372,7 @@ class ListViewHorizontal extends StatelessWidget {
 
 class ListViewVertical extends StatelessWidget {
   List<Playlist> playlistsview ;
-  List<Playlist> myFavorite;
-  ListViewVertical({Key key, this.playlistsview, this.myFavorite}) : super(key: key);
+  ListViewVertical({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -403,7 +399,7 @@ class ListViewVertical extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index], listMyFavorite: myFavorite,)),
+                                  MediaPage(playlist: playlistsview[Index])),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),

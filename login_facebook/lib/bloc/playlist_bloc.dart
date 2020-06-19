@@ -45,10 +45,10 @@ class HomePageBloc  extends Bloc<HomepageEvent, HomePageState> {
 
   @override
   Stream<HomePageState> mapEventToState(HomepageEvent event) async*{
-   if (event is PageCreate) {
-     await getPlaylistWithPage(0);
+   if (event is PageCreate) {  
      await getUserFavoritesPlaylist();
      await getTop3Playlist();
+     await getPlaylistWithPage(0);
     yield CreateState();
     } else if (event is GetTop3) {
       await getTop3Playlist();

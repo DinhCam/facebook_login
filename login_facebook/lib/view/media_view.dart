@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/media_bloc.dart';
 import 'package:loginfacebook/events/media_event.dart';
+import 'package:loginfacebook/model/category_media.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
@@ -9,8 +10,7 @@ import 'home_view.dart';
 
 class MediaPage extends StatelessWidget {
   Playlist playlist;
-  List<Playlist> listMyFavorite;
-  MediaPage({Key key, @required this.playlist, @required this.listMyFavorite}) : super(key: key);
+  MediaPage({Key key, @required this.playlist}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +22,14 @@ class MediaPage extends StatelessWidget {
           primaryColorBrightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.transparent,
           canvasColor: Colors.black54),
-      home: new MediaView(playlist: playlist,listMyFavorite: listMyFavorite),
+      home: new MediaView(playlist: playlist),
     );
   }
 }
 
 class MediaView extends StatefulWidget {
   Playlist playlist;
-  List<Playlist> listMyFavorite;
-  MediaView({Key key, @required this.playlist, @required this.listMyFavorite}) : super(key: key);
+  MediaView({Key key, @required this.playlist}) : super(key: key);
   @override
   _MediaViewState createState() => _MediaViewState();
 }
@@ -47,10 +46,11 @@ class _MediaViewState extends State<MediaView> {
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
     
-    _mediaBloc.dispatch(PageCreateMedia(playlist: widget.playlist,listFavorite: widget.listMyFavorite));
+    _mediaBloc.dispatch(PageCreateMedia(playlist: widget.playlist));
     
     
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +147,7 @@ class _MediaViewState extends State<MediaView> {
                 subtitle: new Text(
                     "  singer: "+listMedia[index].Singer + " ,author: " + listMedia[index].Author, style: TextStyle(fontSize: 14.0),),
                 leading: Icon(Icons.library_music),
+                trailing: getCategory(listMedia[index].getListCategoryMedia),
               ));
         }),
     );
@@ -159,12 +160,20 @@ class _MediaViewState extends State<MediaView> {
       padding: EdgeInsets.all(8.0),
       splashColor: Colors.blueAccent,
       onPressed: () {
-        _mediaBloc.dispatch(AddPlaylistToMyList(isMyList: snapshot, listFavorite: widget.listMyFavorite, playlist: widget.playlist));
+        _mediaBloc.dispatch(AddPlaylistToMyList(isMyList: snapshot, playlist: widget.playlist));
       },
-      child: Text(
-        "+Add Playlist",
+      child: Text(snapshot?
+        "Remove Playlist":"+Add Playlist",
         style: TextStyle(fontSize: 20.0),
       ),);
+  }
+  Text getCategory(List<CategoryMedia> listCategoryMedia){
+    String s="#";
+    listCategoryMedia.forEach((e) {
+      s+=e.getListCategory[0].getName+" #";
+    });
+    String s1=s.substring(0,s.length-1);
+    return Text(s1, style: TextStyle(fontSize: 12),);
   }
 
 }

@@ -24,7 +24,3 @@ class GetPlaylistSuggets extends HomepageEvent {
   @override
   String toString() => 'GetPlaylistSuggets';
 }
-class ScanQR extends HomepageEvent {
-  @override
-  String toString() => 'ScanQR';
-}

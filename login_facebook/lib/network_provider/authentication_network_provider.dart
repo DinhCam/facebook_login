@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 
@@ -16,20 +19,44 @@ String name;
 String email;
 String imageUrl;
 String phoneNumber;
-UserAuthenticated currentUserWithToken;
+UserAuthenticated currentUserWithToken ;
+final FirebaseMessaging _fcm = FirebaseMessaging();
+
 
 class AccountNetworkProvider{
-  String baseUrl ='https://audiostreaming-dev-as.azurewebsites.net/api/Account/';
+  String baseUrl ='https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Account/';
   
-  Future<UserAuthenticated> fetchUser() async {
+  Future<UserAuthenticated> fetchUser(String IdToken, String fcmToken) async {
   String authenticateUrl = baseUrl+ 'authenticate';
   final user = await _auth.currentUser();
 
-  String jsonString = '{"email": "'+ user.email+'"}';
- 
+
+  String jsonString = '{'
+  +'"idToken": "'+IdToken+'",'
+  +'"fcmToken": "'+fcmToken+'"'
++'}';
   final http.Response response = await http.post(authenticateUrl,headers:  {
         HttpHeaders.contentTypeHeader: 'application/json'
       }, body: jsonString  );
+  if (response.statusCode == 200) {
+    // If the server did return a 201 CREATED response,
+    // then parse the JSON.
+    UserAuthenticated rs =  UserAuthenticated.fromJson(json.decode(response.body));
+    return rs;
+  } else {
+    throw Exception('Failed to load user');
+  }
+}
+
+ 
+  Future<UserAuthenticated> fetchUserByJWT() async {
+    final prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString("JwtToken");
+  String authenticateUrl = baseUrl+ 'authenticate';
+  final http.Response response = await http.get(authenticateUrl,headers:  {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer ' + token
+      });
   if (response.statusCode == 200) {
     // If the server did return a 201 CREATED response,
     // then parse the JSON.
@@ -45,6 +72,7 @@ class FirebaseNetworkProvider{
   AccountNetworkProvider accountNetworkProvider =new  AccountNetworkProvider();  
 
 Future<UserAuthenticated> signInWithGoogle() async {
+  final prefs = await SharedPreferences.getInstance();
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
       await googleSignInAccount.authentication;
@@ -63,12 +91,14 @@ Future<UserAuthenticated> signInWithGoogle() async {
     phoneNumber = user.phoneNumber;
     email = user.email;
     imageUrl = user.photoUrl;
-    currentUserWithToken = await accountNetworkProvider.fetchUser();
+    final tokenId =await user.getIdToken();
+    final token = tokenId.token ; 
+    currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
+    prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {
       name = name.substring(0, name.indexOf(" "));
     }
     final idtoken =await user.getIdToken();      
-    final token = idtoken.token    ; 
     print(token);
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
@@ -79,11 +109,12 @@ Future<UserAuthenticated> signInWithGoogle() async {
 }
 
 Future<UserAuthenticated> loginWithFacebook() async {
+try{
+
   // Gọi hàm LogIn() với giá trị truyền vào là một mảng permission
   // Ở đây mình truyền vào cho nó quền xem email
-  //_facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
+  _facebooklogin.loginBehavior = FacebookLoginBehavior.webViewOnly;
 //    _facebooklogin.loginBehavior = FacebookLoginBehavior.nativeOnly;
-
   final result = await _facebooklogin.logIn(['email']);
   // Kiểm tra nếu login thành công thì thực hiện login Firebase
   // (theo mình thì cách này đơn giản hơn là dùng đường dẫn
@@ -96,24 +127,22 @@ Future<UserAuthenticated> loginWithFacebook() async {
     );
     // Lấy thông tin User qua credential có giá trị token đã đăng nhập
     final user = (await _auth.signInWithCredential(credential)).user;
-    assert(user.email != null);
-    if (user.email == null) {
-      return null;
-    } else {
+   
       name = user.displayName;
       phoneNumber = user.phoneNumber;
-      email = user.email;
+      //email = user.email;
       imageUrl = user.photoUrl;
-
-      currentUserWithToken = await accountNetworkProvider.fetchUser();
-
+      final tokenId =await user.getIdToken();
+      currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
       if (name.contains(" ")) {
         name = name.substring(0, name.indexOf(" "));
       }
-    }
     return currentUserWithToken;
   }
-
+  print("object");
+}catch(e){
+print(e);
+}
 }
   Future logout() async {
     await _auth.signOut();
@@ -124,9 +153,10 @@ Future<UserAuthenticated> loginWithFacebook() async {
 Future<bool> checkLogin() async {
     final user = await _auth.currentUser();
     if (user != null) {
-      currentUserWithToken = await accountNetworkProvider.fetchUser();
+      currentUserWithToken = await accountNetworkProvider.fetchUserByJWT();
       return true;
     }else 
     return false;
   }
 }
+

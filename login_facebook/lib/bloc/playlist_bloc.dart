@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'package:loginfacebook/bloc/home_page_event.dart';
+import 'package:loginfacebook/bloc/home_page_state.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
+import 'package:bloc/bloc.dart';
 
-class PlaylistBloc {
+class HomePageBloc  extends Bloc<HomepageEvent, HomePageState> {
   PlaylistRepository _playlistRepository = PlaylistRepository();
 
   final _favoritePlaylistController = StreamController<List<Playlist>>();
@@ -20,7 +22,7 @@ class PlaylistBloc {
   StreamSink<List<Playlist>> get playlistWIthPage_sink => _playlistWithPageController.sink;
   Stream<List<Playlist>> get stream_playlistWIthPage => _playlistWithPageController.stream;
 
-  PlaylistBloc({@required PlaylistRepository playlistRepository})
+  HomePageBloc({@required PlaylistRepository playlistRepository})
       : assert(playlistRepository != null),
         _playlistRepository = playlistRepository;
 
@@ -35,5 +37,32 @@ class PlaylistBloc {
   void getPlaylistWithPage(int page) async{
     final tmp = await  _playlistRepository.getPlaylists(page);
     playlistWIthPage_sink.add(tmp);
-  } 
+  }
+
+  @override
+  // TODO: implement initialState
+  HomePageState get initialState => CreateState();
+
+  @override
+  Stream<HomePageState> mapEventToState(HomepageEvent event) async*{
+   if (event is PageCreate) {
+     await getPlaylistWithPage(0);
+     await getUserFavoritesPlaylist();
+     await getTop3Playlist();
+    yield CreateState();
+    } else if (event is GetTop3) {
+      await getTop3Playlist();
+      yield LoadFinishState();
+    } else if (event is GetFavorite) {
+      await getUserFavoritesPlaylist();
+      yield LoadFinishState();
+    } else if (event is GetPlaylistSuggets) {
+      await getPlaylistWithPage(0);
+      yield LoadFinishState();
+    } 
+    else if (event is ScanQR) {
+        await getPlaylistWithPage(0);
+        yield ScanQRFinishState();
+    } 
+  }
 }

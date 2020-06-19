@@ -19,7 +19,7 @@ class AccountRepository{
   Future<bool> CheckLogin() async{
     return await firebaseNetworkProvider.checkLogin();
   }
-   Future<UserAuthenticated> fetchUser() async{
-    return await accountNetworkProvider.fetchUser();
-  }
+  //  Future<UserAuthenticated> fetchUser() async{
+  //   return await accountNetworkProvider.fetchUser();
+  // }
 }

@@ -16,4 +16,7 @@ class PlaylistRepository {
   Future<List<Playlist>> getPlaylists(int page) async{
    return await playListNetWorkProvider.getPlaylists(page);
   }
+   Future<List<Playlist>> getPlaylistsBySearchKey(String searchKey) async{
+   return await playListNetWorkProvider.getPlaylistsBySearchkey(searchKey);
+  }
 }

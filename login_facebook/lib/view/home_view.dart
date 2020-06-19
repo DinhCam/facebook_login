@@ -1,11 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
-import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/home_page_event.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
 import 'package:loginfacebook/model/playlist.dart';
@@ -40,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthenticateBloc _authenticateBloc;
   int pageNumber = 1;
   final FirebaseMessaging _fcm = FirebaseMessaging();
+  
+  
   @override
   void initState() {
     super.initState();
@@ -76,8 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // TODO optional
         },
       );
-    _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
-    _homePageBloc.dispatch(PageCreate());
+    
   }
 
   @override
@@ -152,7 +151,46 @@ class _HomeScreenState extends State<HomeScreen> {
             child: new ListView(children: <Widget>[
           Row(
             children: <Widget>[
-            
+             new Container(
+                  width: 70,
+                  height: 70,
+                  child: new OutlineButton(
+                      splashColor: Colors.grey,
+                      onPressed: () {
+                        _fcm.subscribeToTopic("IU");
+                      },
+                      borderSide: BorderSide(color: Colors.transparent),
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image(
+                                    image: AssetImage("assets/filled-like.png"),
+                                    height: 35.0,
+                                    fit: BoxFit.fitHeight),
+                              ])))),
+                              new Container(
+                  width: 70,
+                  height: 70,
+                  child: new OutlineButton(
+                      splashColor: Colors.grey,
+                      onPressed: () {
+                        _fcm.unsubscribeFromTopic("IU");
+                      },
+                      borderSide: BorderSide(color: Colors.transparent),
+                      child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Image(
+                                    image: AssetImage("assets/icons8-heart-64.png"),
+                                    height: 35.0,
+                                    fit: BoxFit.fitHeight),
+                              ])))),
               new Container(
                   width: 70,
                   height: 70,
@@ -286,30 +324,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentIndex = 0;
 
-  Future<List<Post>> search(String search) async {
-    await Future.delayed(Duration(seconds: 2));
-    return List.generate(search.length, (int index) {
-      return Post(
-        "Title : $search $index",
-        "Description :$search $index",
-      );
-    });
-  }
-}
 
-class Post {
-  final String title;
-  final String description;
-
-  Post(this.title, this.description);
 }
 
 class ListViewHorizontal extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
+  List<Playlist> playlistsview;
   ListViewHorizontal({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    HomePageBloc homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
     return Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
@@ -321,7 +344,14 @@ class ListViewHorizontal extends StatelessWidget {
               return new Container(
                   child: new OutlineButton(
                       splashColor: Colors.grey,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  MediaPage(playlist: playlistsview[Index])),
+                        );
+                      },
                       borderSide: BorderSide(color: Colors.transparent),
                       child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -341,8 +371,7 @@ class ListViewHorizontal extends StatelessWidget {
 }
 
 class ListViewVertical extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
+  List<Playlist> playlistsview ;
   ListViewVertical({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -396,6 +425,8 @@ class ListViewVertical extends StatelessWidget {
 }
 
 class DataSearch extends SearchDelegate<String> {
+  List<Playlist> myFavorite;
+  DataSearch({Key key, this.myFavorite});
   SearchPlaylistBloc _searchPlaylistBloc = SearchPlaylistBloc(playlistRepository: PlaylistRepository());
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -429,7 +460,7 @@ class DataSearch extends SearchDelegate<String> {
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
           return snapshot.hasData
-              ? ListViewVertical(playlistsview: snapshot.data)
+              ? ListViewVertical(playlistsview: snapshot.data,)
               : Center(child: CircularProgressIndicator());
         },
       );

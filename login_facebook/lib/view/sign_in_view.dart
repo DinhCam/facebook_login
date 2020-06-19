@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/authentication_state.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/view/home_view.dart';
 
@@ -29,10 +29,15 @@ class _SignInScreen extends State<SignInScreen> {
         bloc: _authenticationBloc,
         listener: (BuildContext context, AuthenticationState state) {
           if (state is Authenticated == true) {
+             Navigator.pop(
+              context,
+              MaterialPageRoute(builder: (context) => SignInScreen()),
+            );
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
             );
+           
           }
         },
         child: new Stack(children: [
@@ -47,8 +52,9 @@ class _SignInScreen extends State<SignInScreen> {
           ),
           Positioned(
               width: 100,
-              top: 350,
+              top: 330,
               left: 140,
+              
               child: new Image(
                 image: new AssetImage("assets/love-icon.png"),
                 width: 100,
@@ -57,9 +63,23 @@ class _SignInScreen extends State<SignInScreen> {
                 fit: BoxFit.fitHeight,
                 alignment: Alignment.center,
               )),
+              Positioned(
+              width: 300,
+              top: 200,
+              left: 80,
+              child: new Text("AUDIO STREAMING",
+              
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+                color: Colors.white,
+                decoration: TextDecoration.none
+              ),
+              
+              )),
           Positioned(
               width: 100,
-              top: 328,
+              top: 308,
               left: 220,
               child: new Image(
                 image: new AssetImage("assets/high.png"),

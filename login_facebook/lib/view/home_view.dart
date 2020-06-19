@@ -1,27 +1,48 @@
+// import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:loginfacebook/bloc/authentication_bloc.dart';
+// import 'package:loginfacebook/bloc/home_page_event.dart';
+// import 'package:loginfacebook/bloc/home_page_state.dart';
+// import 'package:loginfacebook/bloc/playlist_bloc.dart';
+// import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
+// import 'package:loginfacebook/bloc/stores_bloc.dart';
+// import 'package:loginfacebook/model/playlist.dart';
+// import 'package:loginfacebook/model/store.dart';
+// import 'package:loginfacebook/repository/account_repository.dart';
+// import 'package:loginfacebook/repository/playlist_repository.dart';
+// import 'package:loginfacebook/repository/stores_repository.dart';
+// import 'package:loginfacebook/view/media_view.dart';
+// import 'package:loginfacebook/view/sign_in_view.dart';
+// import 'package:loginfacebook/states/stores_state.dart';
+// import 'package:loginfacebook/states/home_page_state.dart';
+// import 'package:loginfacebook/states/authentication_state.dart';
+
+
+
+
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
-import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/bloc/authentication_event.dart';
-import 'package:loginfacebook/bloc/authentication_state.dart';
 import 'package:loginfacebook/bloc/home_page_event.dart';
-import 'package:loginfacebook/bloc/home_page_state.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
 import 'package:loginfacebook/bloc/stores_bloc.dart';
-import 'package:loginfacebook/bloc/stores_event.dart';
-import 'package:loginfacebook/bloc/stores_state.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/events/stores_event.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/model/store.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:loginfacebook/repository/stores_repository.dart';
+import 'package:loginfacebook/states/authentication_state.dart';
+import 'package:loginfacebook/states/home_page_state.dart';
+import 'package:loginfacebook/states/stores_state.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/sign_in_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -396,11 +417,11 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class ListViewHorizontal extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
+  List<Playlist> playlistsview;
   ListViewHorizontal({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    HomePageBloc homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
     return Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
@@ -439,8 +460,7 @@ class ListViewHorizontal extends StatelessWidget {
 }
 
 class ListViewVertical extends StatelessWidget {
-  List<Playlist> playlistsview = new List();
-
+  List<Playlist> playlistsview ;
   ListViewVertical({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {

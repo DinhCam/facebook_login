@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:loginfacebook/bloc/home_page_event.dart';
-import 'package:loginfacebook/bloc/home_page_state.dart';
+import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -45,10 +45,10 @@ class HomePageBloc  extends Bloc<HomepageEvent, HomePageState> {
 
   @override
   Stream<HomePageState> mapEventToState(HomepageEvent event) async*{
-   if (event is PageCreate) {
-     await getPlaylistWithPage(0);
+   if (event is PageCreate) {  
      await getUserFavoritesPlaylist();
      await getTop3Playlist();
+     await getPlaylistWithPage(0);
     yield CreateState();
     } else if (event is GetTop3) {
       await getTop3Playlist();
@@ -59,10 +59,6 @@ class HomePageBloc  extends Bloc<HomepageEvent, HomePageState> {
     } else if (event is GetPlaylistSuggets) {
       await getPlaylistWithPage(0);
       yield LoadFinishState();
-    } 
-    else if (event is ScanQR) {
-        await getPlaylistWithPage(0);
-        yield ScanQRFinishState();
-    } 
+  } 
   }
 }

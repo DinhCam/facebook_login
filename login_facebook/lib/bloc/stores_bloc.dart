@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:loginfacebook/bloc/home_page_event.dart';
-import 'package:loginfacebook/bloc/stores_event.dart';
-import 'package:loginfacebook/bloc/stores_state.dart';
+import 'package:loginfacebook/events/stores_event.dart';
 import 'package:loginfacebook/model/store.dart';
 import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:loginfacebook/states/stores_state.dart';
 import 'package:loginfacebook/utility/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -11,5 +11,3 @@ class LoadFinishState extends HomePageState {
 
 class CreateState extends HomePageState {
 }
-class ScanQRFinishState extends HomePageState {
-}

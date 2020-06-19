@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:loginfacebook/model/media.dart';
+import 'package:loginfacebook/repository/media_repository.dart';
 import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:loginfacebook/states/media_state.dart';
-import 'package:loginfacebook/model/media.dart';
-import 'package:loginfacebook/repository/media_repository.dart';
 import 'package:bloc/bloc.dart';
 
 class MediaBloc extends Bloc<MediaEvent, MediaState>{
   MediaRepository _mediaRepository = MediaRepository();
   PlaylistRepository _playlistRepository = new PlaylistRepository();
+// >>>>>>> db28e008d9ec227333b74c8734eddee4ad0750fa
 
   final _mediaController = StreamController<List<Media>>();
   StreamSink<List<Media>> get media_sink => _mediaController.sink;

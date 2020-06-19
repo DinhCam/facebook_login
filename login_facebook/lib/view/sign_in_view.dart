@@ -20,7 +20,7 @@ class _SignInScreen extends State<SignInScreen> {
     super.initState();
     _authenticationBloc =
         AuthenticateBloc(accountRepository: _accountRepository);
-    _authenticationBloc.dispatch(AppStarted());
+    _authenticationBloc.add(AppStarted());
   }
 
   @override
@@ -98,7 +98,7 @@ class _SignInScreen extends State<SignInScreen> {
                 Buttons.Google,
                 text: "Sign in with Google",
                 onPressed: () {
-                  _authenticationBloc.dispatch(
+                  _authenticationBloc.add(
                     SignInWithGoogle(),
                   );
                 }, //on press
@@ -114,7 +114,7 @@ class _SignInScreen extends State<SignInScreen> {
                 Buttons.Facebook,
                 text: "Sign in with FaceBook",
                 onPressed: () {
-                  _authenticationBloc.dispatch(
+                  _authenticationBloc.add(
                     LoggedInWithFacebook(),
                   );
                 }, //on press

@@ -38,11 +38,13 @@ dependencies:
   basic_utils: ^1.5.1
   floating_search_bar: 0.3.0
   equatable: ^0.2.0
-  flutter_bloc: ^0.11.0
+  flutter_bloc: ^4.0.1
   firebase_messaging: ^6.0.16
   shared_preferences: ^0.5.7+3
   flutter_firebase_iid: ^0.0.1
-
+  path_provider: 0.4.1
+  barcode_scan: ^3.0.1
+  flutter_barcode_scanner: ^1.0.1
   
 dev_dependencies:
   flutter_test:

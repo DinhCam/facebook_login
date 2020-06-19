@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:loginfacebook/events/home_page_event.dart';
 
 class HomePageBloc  extends Bloc<HomepageEvent, HomePageState> {
   PlaylistRepository _playlistRepository = PlaylistRepository();

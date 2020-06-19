@@ -46,7 +46,7 @@ class _MediaViewState extends State<MediaView> {
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
     
-    _mediaBloc.dispatch(PageCreateMedia(playlist: widget.playlist));
+    _mediaBloc.add(PageCreateMedia(playlist: widget.playlist));
     
     
   }
@@ -160,7 +160,7 @@ class _MediaViewState extends State<MediaView> {
       padding: EdgeInsets.all(8.0),
       splashColor: Colors.blueAccent,
       onPressed: () {
-        _mediaBloc.dispatch(AddPlaylistToMyList(isMyList: snapshot, playlist: widget.playlist));
+        _mediaBloc.add(AddPlaylistToMyList(isMyList: snapshot, playlist: widget.playlist));
       },
       child: Text(snapshot?
         "Remove Playlist":"+Add Playlist",

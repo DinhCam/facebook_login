@@ -1,16 +1,48 @@
+// import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:loginfacebook/bloc/authentication_bloc.dart';
+// import 'package:loginfacebook/bloc/home_page_event.dart';
+// import 'package:loginfacebook/bloc/home_page_state.dart';
+// import 'package:loginfacebook/bloc/playlist_bloc.dart';
+// import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
+// import 'package:loginfacebook/bloc/stores_bloc.dart';
+// import 'package:loginfacebook/model/playlist.dart';
+// import 'package:loginfacebook/model/store.dart';
+// import 'package:loginfacebook/repository/account_repository.dart';
+// import 'package:loginfacebook/repository/playlist_repository.dart';
+// import 'package:loginfacebook/repository/stores_repository.dart';
+// import 'package:loginfacebook/view/media_view.dart';
+// import 'package:loginfacebook/view/sign_in_view.dart';
+// import 'package:loginfacebook/states/stores_state.dart';
+// import 'package:loginfacebook/states/home_page_state.dart';
+// import 'package:loginfacebook/states/authentication_state.dart';
+
+
+
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
-import 'package:loginfacebook/events/authentication_event.dart';
-import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
+import 'package:loginfacebook/bloc/stores_bloc.dart';
+import 'package:loginfacebook/events/authentication_event.dart';
+import 'package:loginfacebook/events/stores_event.dart';
 import 'package:loginfacebook/model/playlist.dart';
+import 'package:loginfacebook/model/store.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
+import 'package:loginfacebook/repository/stores_repository.dart';
+import 'package:loginfacebook/states/authentication_state.dart';
+import 'package:loginfacebook/states/home_page_state.dart';
+import 'package:loginfacebook/states/stores_state.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/sign_in_view.dart';
+import 'package:loginfacebook/events/home_page_event.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -36,257 +68,316 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   HomePageBloc _homePageBloc;
   AuthenticateBloc _authenticateBloc;
+  StoresBloc _storesBloc;
   int pageNumber = 1;
+  int currentIndex = 0;
   final FirebaseMessaging _fcm = FirebaseMessaging();
-  
-  
   @override
   void initState() {
     super.initState();
     _authenticateBloc =
         AuthenticateBloc(accountRepository: AccountRepository());
+    _storesBloc = StoresBloc(storesRepository: StoresRepository());
     _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
-    _homePageBloc.dispatch(PageCreate());
-
+    _homePageBloc.add(PageCreate());
     _fcm.configure(
-          onMessage: (Map<String, dynamic> message) async {
-            print("onMessage: $message");
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                        content: ListTile(
-                        title: Text(message['notification']['title']),
-                        subtitle: Text(message['notification']['body']),
-                        ),
-                        actions: <Widget>[
-                        FlatButton(
-                            child: Text('Ok'),
-                            onPressed: () => Navigator.of(context).pop(),
-                        ),
-                    ],
-                ),
-            );
-        },
-        onLaunch: (Map<String, dynamic> message) async {
-            print("onLaunch: $message");
-            // TODO optional
-        },
-        onResume: (Map<String, dynamic> message) async {
-            print("onResume: $message");
-            // TODO optional
-        },
-      );
-    
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: ListTile(
+              title: Text(message['notification']['title']),
+              subtitle: Text(message['notification']['body']),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+        );
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        // TODO optional
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        // TODO optional
+      },
+    );
+    _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
+    _homePageBloc.add(PageCreate());
   }
 
   @override
   build(BuildContext context) {
-    return new Stack(children: <Widget>[
-      Image.asset(
-        //background
-        "assets/pngtree-purple-brilliant-background-image_257402.jpg",
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.cover,
-      ),
-      new Scaffold(
-        appBar: AppBar(
-          title: Text("Home"),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.search), onPressed: () {
-              showSearch(context: context, delegate: DataSearch());
-            })
-          ],
-          backgroundColor: Colors.black26
-        ),
-        backgroundColor: Colors.transparent,
-        bottomNavigationBar: new BottomNavigationBar(
-            type: BottomNavigationBarType.shifting,
-            // BottomNavigationBa
-            onTap: onTabTapped, // new
-            currentIndex: currentIndex,
-            items: [
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/icons8-home-page-64.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Home",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/icons8-favorite-folder-64.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Favorite",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/qr-code.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Check in",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(
-                  image: AssetImage("assets/userinfo.png"),
-                  width: 40,
-                  fit: BoxFit.cover,
-                ),
-                title: Text("Profile",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-              )
-            ]),
-        body: new SafeArea(
-            child: new ListView(children: <Widget>[
-          Row(
-            children: <Widget>[
-             new Container(
-                  width: 70,
-                  height: 70,
-                  child: new OutlineButton(
-                      splashColor: Colors.grey,
-                      onPressed: () {
-                        _fcm.subscribeToTopic("IU");
-                      },
-                      borderSide: BorderSide(color: Colors.transparent),
-                      child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image(
-                                    image: AssetImage("assets/filled-like.png"),
-                                    height: 35.0,
-                                    fit: BoxFit.fitHeight),
-                              ])))),
-                              new Container(
-                  width: 70,
-                  height: 70,
-                  child: new OutlineButton(
-                      splashColor: Colors.grey,
-                      onPressed: () {
-                        _fcm.unsubscribeFromTopic("IU");
-                      },
-                      borderSide: BorderSide(color: Colors.transparent),
-                      child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image(
-                                    image: AssetImage("assets/icons8-heart-64.png"),
-                                    height: 35.0,
-                                    fit: BoxFit.fitHeight),
-                              ])))),
-              new Container(
-                  width: 70,
-                  height: 70,
-                  child: new OutlineButton(
-                      splashColor: Colors.grey,
-                      onPressed: () {
-                        _authenticateBloc.dispatch(LoggedOut());
-                        Navigator.of(context).pop(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return HomeScreen();
-                            },
-                          ),
-                        );
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return SignInScreen();
-                            },
-                          ),
-                        );
-                      },
-                      borderSide: BorderSide(color: Colors.transparent),
-                      child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Image(
-                                    image: AssetImage("assets/export.png"),
-                                    height: 35.0,
-                                    fit: BoxFit.fitHeight),
-                              ]))))
-            ],
+    return MultiBlocListener(
+        listeners: [
+          BlocListener(
+              bloc: _authenticateBloc,
+              listener: (BuildContext context, AuthenticationState state) {},
+              child: null),
+          BlocListener(
+              bloc: _homePageBloc,
+              listener: (BuildContext context, HomePageState state) {},
+              child: null),
+          BlocListener(
+              bloc: _storesBloc,
+              listener: (BuildContext context, StoresState state) {
+                if (state is QRScanSuccess) {
+                  Store store = state.store;
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: ListTile(
+                        title: Text("Check in result"),
+                        subtitle: Text('Welcome: ' +
+                            store.StoreName +
+                            '\nAddress: ' +
+                            store.Address),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Ok'),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (state is QRScanFail) {
+                  String msg = state.messages;
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: ListTile(
+                        title: Text("Check in result"),
+                        subtitle: Text(msg),
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Ok'),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: null),
+        ],
+        child: new Stack(children: <Widget>[
+          Image.asset(
+            //background
+            "assets/pngtree-purple-brilliant-background-image_257402.jpg",
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
           ),
-          new Container(
-              padding: const EdgeInsets.only(top: 10.0),
-              margin: const EdgeInsets.only(left: 0, right: 0, top: 10),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.topCenter,
-                    //margin: const EdgeInsets.only(left: 30, right: 0, top: 90),
-                    child: Text(
-                      "Your favorite",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ),
-                  StreamBuilder<List<Playlist>>(
-                    stream: _homePageBloc.stream_favotite,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) print(snapshot.error);
-                      return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data)
-                          : Center(child: CircularProgressIndicator());
-                    },
-                  )
+          new Scaffold(
+            appBar: AppBar(
+                title: Text("Home"),
+                actions: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        showSearch(context: context, delegate: DataSearch());
+                      })
                 ],
-              )),
-          new Container(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.topCenter,
-                    // margin: const EdgeInsets.only(left: 30, right: 0, top: 260),
-                    child: Text(
-                      "Top 3 Playlist",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.none,
-                      ),
+                backgroundColor: Colors.black26),
+            backgroundColor: Colors.transparent,
+            bottomNavigationBar: new BottomNavigationBar(
+                // BottomNavigationBa
+                onTap: onTabTapped, // new
+                currentIndex: currentIndex,
+                showUnselectedLabels: true,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Image(
+                      image: AssetImage("assets/icons8-home-page-64.png"),
+                      width: 40,
+                      fit: BoxFit.cover,
                     ),
+                    title: Text("Home",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17)),
                   ),
-                  StreamBuilder<List<Playlist>>(
-                    stream: _homePageBloc.stream_top3,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) print(snapshot.error);
-                      return snapshot.hasData
-                          ? ListViewHorizontal(playlistsview: snapshot.data)
-                          : Center(child: CircularProgressIndicator());
-                    },
+                  BottomNavigationBarItem(
+                    icon: Image(
+                      image: AssetImage("assets/icons8-favorite-folder-64.png"),
+                      width: 40,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text("Favorite",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17)),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image(
+                      image: AssetImage("assets/qr-code.png"),
+                      width: 40,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text("Check in",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17)),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image(
+                      image: AssetImage("assets/userinfo.png"),
+                      width: 40,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text("Profile",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 17)),
                   )
+                ]),
+            body: new SafeArea(
+                child: new ListView(children: <Widget>[
+              Row(
+                children: <Widget>[
+                  new Container(
+                      width: 70,
+                      height: 70,
+                      child: new OutlineButton(
+                          splashColor: Colors.grey,
+                          onPressed: () {
+                            _fcm.subscribeToTopic("IU");
+                          },
+                          borderSide: BorderSide(color: Colors.transparent),
+                          child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Image(
+                                        image: AssetImage(
+                                            "assets/filled-like.png"),
+                                        height: 35.0,
+                                        fit: BoxFit.fitHeight),
+                                  ])))),
+                  new Container(
+                      width: 70,
+                      height: 70,
+                      child: new OutlineButton(
+                          splashColor: Colors.grey,
+                          onPressed: () {
+                            _fcm.unsubscribeFromTopic("IU");
+                          },
+                          borderSide: BorderSide(color: Colors.transparent),
+                          child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Image(
+                                        image: AssetImage(
+                                            "assets/icons8-heart-64.png"),
+                                        height: 35.0,
+                                        fit: BoxFit.fitHeight),
+                                  ])))),
+                  new Container(
+                      width: 70,
+                      height: 70,
+                      child: new OutlineButton(
+                          splashColor: Colors.grey,
+                          onPressed: () {
+                            _authenticateBloc.add(LoggedOut());
+                            Navigator.of(context).pop(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return HomeScreen();
+                                },
+                              ),
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SignInScreen();
+                                },
+                              ),
+                            );
+                          },
+                          borderSide: BorderSide(color: Colors.transparent),
+                          child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Image(
+                                        image: AssetImage("assets/export.png"),
+                                        height: 35.0,
+                                        fit: BoxFit.fitHeight),
+                                  ]))))
                 ],
-              )),
-          new Container(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Column(children: <Widget>[
+              ),
+              new Container(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  margin: const EdgeInsets.only(left: 0, right: 0, top: 10),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.topCenter,
+                        //margin: const EdgeInsets.only(left: 30, right: 0, top: 90),
+                        child: Text(
+                          "Your favorite",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      StreamBuilder<List<Playlist>>(
+                        stream: _homePageBloc.stream_favotite,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) print(snapshot.error);
+                          return snapshot.hasData
+                              ? ListViewHorizontal(playlistsview: snapshot.data)
+                              : Center(child: CircularProgressIndicator());
+                        },
+                      )
+                    ],
+                  )),
+              new Container(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.topCenter,
+                        // margin: const EdgeInsets.only(left: 30, right: 0, top: 260),
+                        child: Text(
+                          "Top 3 Playlist",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      StreamBuilder<List<Playlist>>(
+                        stream: _homePageBloc.stream_top3,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) print(snapshot.error);
+                          return snapshot.hasData
+                              ? ListViewHorizontal(playlistsview: snapshot.data)
+                              : Center(child: CircularProgressIndicator());
+                        },
+                      )
+                    ],
+                  )),
+              new Container(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(children: <Widget>[
                     new Container(
                       alignment: Alignment.topCenter,
                       // margin: const EdgeInsets.only(left: 30, right: 0, top: 260),
@@ -300,31 +391,29 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                StreamBuilder<List<Playlist>>(
-                  stream: _homePageBloc.stream_playlistWIthPage,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) print(snapshot.error);
-                    return snapshot.hasData
-                        ? ListViewVertical(playlistsview: snapshot.data)
-                        : Center(child: CircularProgressIndicator());
-                  },
-                )
-              ]))
-        ])),
-      ),
-    ]);
+                    StreamBuilder<List<Playlist>>(
+                      stream: _homePageBloc.stream_playlistWIthPage,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) print(snapshot.error);
+                        return snapshot.hasData
+                            ? ListViewVertical(playlistsview: snapshot.data)
+                            : Center(child: CircularProgressIndicator());
+                      },
+                    )
+                  ]))
+            ])),
+          ),
+        ]));
   }
 
-
-  void onTabTapped(int index) {
+  void onTabTapped(int index) async {
     setState(() {
       currentIndex = index;
     });
+    if (currentIndex == 2) {
+      await _storesBloc.add(QRCodeScan());
+    }
   }
-
-  int currentIndex = 0;
-
-
 }
 
 class ListViewHorizontal extends StatelessWidget {
@@ -425,17 +514,16 @@ class ListViewVertical extends StatelessWidget {
 }
 
 class DataSearch extends SearchDelegate<String> {
-  List<Playlist> myFavorite;
-  DataSearch({Key key, this.myFavorite});
-  SearchPlaylistBloc _searchPlaylistBloc = SearchPlaylistBloc(playlistRepository: PlaylistRepository());
+  SearchPlaylistBloc _searchPlaylistBloc =
+      SearchPlaylistBloc(playlistRepository: PlaylistRepository());
   @override
   List<Widget> buildActions(BuildContext context) {
     // TODO: implement buildActions
     return [
       IconButton(
         icon: Icon(Icons.clear),
-        onPressed: (){
-          query="";
+        onPressed: () {
+          query = "";
         },
       )
     ];
@@ -455,30 +543,31 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return  StreamBuilder<List<Playlist>>(
-        stream: _searchPlaylistBloc.stream_playlistWIthPage,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData
-              ? ListViewVertical(playlistsview: snapshot.data,)
-              : Center(child: CircularProgressIndicator());
-        },
-      );
+    return StreamBuilder<List<Playlist>>(
+      stream: _searchPlaylistBloc.stream_playlistWIthPage,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) print(snapshot.error);
+        return snapshot.hasData
+            ? ListViewVertical(playlistsview: snapshot.data)
+            : Center(child: CircularProgressIndicator());
+      },
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-   _searchPlaylistBloc.getPlaylistsBySearchkey(query);
-    query.isEmpty?_searchPlaylistBloc.getPlaylistsBySearchkey(""):_searchPlaylistBloc.getPlaylistsBySearchkey(query);
-    return  StreamBuilder<List<Playlist>>(
-        stream: _searchPlaylistBloc.stream_playlistWIthPage,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData
-              ? ListViewVertical(playlistsview: snapshot.data)
-              : Center(child: CircularProgressIndicator());
-        },
-      );
-    
+    _searchPlaylistBloc.getPlaylistsBySearchkey(query);
+    query.isEmpty
+        ? _searchPlaylistBloc.getPlaylistsBySearchkey("")
+        : _searchPlaylistBloc.getPlaylistsBySearchkey(query);
+    return StreamBuilder<List<Playlist>>(
+      stream: _searchPlaylistBloc.stream_playlistWIthPage,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) print(snapshot.error);
+        return snapshot.hasData
+            ? ListViewVertical(playlistsview: snapshot.data)
+            : Center(child: CircularProgressIndicator());
+      },
+    );
   }
 }

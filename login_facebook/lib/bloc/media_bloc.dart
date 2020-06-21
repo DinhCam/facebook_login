@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:loginfacebook/model/media.dart';
+import 'package:loginfacebook/repository/favorite_playlist_repository.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
 import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/playlist.dart';
@@ -11,6 +12,7 @@ import 'package:bloc/bloc.dart';
 class MediaBloc extends Bloc<MediaEvent, MediaState>{
   MediaRepository _mediaRepository = MediaRepository();
   PlaylistRepository _playlistRepository = new PlaylistRepository();
+  FavoritePlaylistRepository _favoritePlaylistRepository = new FavoritePlaylistRepository();
 // >>>>>>> db28e008d9ec227333b74c8734eddee4ad0750fa
 
   final _mediaController = StreamController<List<Media>>();
@@ -49,19 +51,14 @@ class MediaBloc extends Bloc<MediaEvent, MediaState>{
     
     
   }
-  void addplaylist(Playlist playlist, bool isMyList){
-    // if(listPlaylist == null){
-    //   listPlaylist = new List();
-    // }
-    
-    //   if(isMyList){
-    //     listPlaylist.remove(playlist);
-    //     addPlaylist_sink.add(!isMyList);
-    //   }else{
-    //     listPlaylist.add(playlist);
-    //     addPlaylist_sink.add(!isMyList);
-    //   }
+  void addplaylist(Playlist playlist, bool isMyList, String accountId){
+    if(isMyList){
+      _favoritePlaylistRepository.deleteFavoritePlaylist(playlist.Id, accountId);
       addPlaylist_sink.add(!isMyList);
+    }else{
+      _favoritePlaylistRepository.addFavoritePlaylist(playlist.Id, accountId);
+      addPlaylist_sink.add(!isMyList);
+    }
     
     
   }
@@ -77,7 +74,7 @@ class MediaBloc extends Bloc<MediaEvent, MediaState>{
       await getStatusForButton(event.playlist);
       yield CreatePageMediaState();
     }else if(event is AddPlaylistToMyList){
-      await addplaylist(event.playlist, event.isMyList);
+      await addplaylist(event.playlist, event.isMyList , event.accountId);
       yield AddButton();
     }
   } 

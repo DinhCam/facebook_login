@@ -27,7 +27,7 @@ class UserAuthenticated
           );
         factory UserAuthenticated.fromJson(Map<String, dynamic> json) {
           return UserAuthenticated(
-            Id: json['userId'],
+            Id: json['id'],
             FullName: json['fullName'],
             PhoneNumber: json['phoneNumber'],
             Email: json['email'],

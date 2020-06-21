@@ -29,7 +29,7 @@ class _SignInScreen extends State<SignInScreen> {
         bloc: _authenticationBloc,
         listener: (BuildContext context, AuthenticationState state) {
           if (state is Authenticated == true) {
-             Navigator.pop(
+            Navigator.pop(
               context,
               MaterialPageRoute(builder: (context) => SignInScreen()),
             );
@@ -37,7 +37,6 @@ class _SignInScreen extends State<SignInScreen> {
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
             );
-           
           }
         },
         child: new Stack(children: [
@@ -50,49 +49,48 @@ class _SignInScreen extends State<SignInScreen> {
               ),
             ),
           ),
-          Positioned(
-              width: 100,
-              top: 330,
-              left: 140,
+          Positioned(             
+              top: MediaQuery.of(context).size.height*0.25,
               
-              child: new Image(
-                image: new AssetImage("assets/love-icon.png"),
-                width: 100,
-                height: 100,
-                color: null,
-                fit: BoxFit.fitHeight,
-                alignment: Alignment.center,
-              )),
-              Positioned(
-              width: 300,
-              top: 200,
-              left: 80,
-              child: new Text("AUDIO STREAMING",
-              
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-                color: Colors.white,
-                decoration: TextDecoration.none
+              child: new Container(
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.all(0.0),
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: new Image(
+                        image: new AssetImage("assets/logo_aus.png"),
+                        width: MediaQuery.of(context).size.width*0.25,
+                        height: MediaQuery.of(context).size.width*0.25,
+                        color: null,
+                        fit: BoxFit.fill,
+                        alignment: Alignment.center,                     
+                    ),
+                    ) 
+                  ]
+                )
               ),
-              
-              )),
-          Positioned(
-              width: 100,
-              top: 308,
-              left: 220,
-              child: new Image(
-                image: new AssetImage("assets/high.png"),
-                width: 100,
-                height: 180,
-                color: null,
-                fit: BoxFit.fitHeight,
-                alignment: Alignment.center,
-              )),
+              ),             
+          Positioned(           
+              top: MediaQuery.of(context).size.height*0.43,
+              child: new Container(
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.all(0.0),
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new Text("Audio Streaming", style: TextStyle(fontSize: 20, color: Colors.white, decoration: TextDecoration.none), )
+                  ]
+                )
+              ),
+
+             ),
           Positioned(
               width: 300,
               height: 55,
-              bottom: 200,
+              top: MediaQuery.of(context).size.height*0.7,
               left: 60,
               child: new SignInButton(
                 Buttons.Google,
@@ -108,7 +106,7 @@ class _SignInScreen extends State<SignInScreen> {
           Positioned(
               width: 300,
               height: 55,
-              bottom: 100,
+              top: MediaQuery.of(context).size.height*0.81,
               left: 60,
               child: new SignInButton(
                 Buttons.Facebook,

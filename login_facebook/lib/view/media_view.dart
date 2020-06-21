@@ -4,6 +4,7 @@ import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/category_media.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
+import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
 
 import 'home_view.dart';
@@ -153,6 +154,9 @@ class _MediaViewState extends State<MediaView> {
     );
   }
   Widget buildBt(snapshot){
+    print(snapshot);
+    print(currentUserWithToken.Id);
+    print(widget.playlist.Id);
     return new FlatButton(
       color: snapshot? Colors.green : Colors.red,
       disabledColor: Colors.grey,
@@ -160,7 +164,7 @@ class _MediaViewState extends State<MediaView> {
       padding: EdgeInsets.all(8.0),
       splashColor: Colors.blueAccent,
       onPressed: () {
-        _mediaBloc.add(AddPlaylistToMyList(isMyList: snapshot, playlist: widget.playlist));
+        _mediaBloc.add(AddPlaylistToMyList(isMyList: snapshot, playlist: widget.playlist, accountId: currentUserWithToken.Id));
       },
       child: Text(snapshot?
         "Remove Playlist":"+Add Playlist",

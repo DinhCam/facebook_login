@@ -19,5 +19,6 @@ class PageCreateMedia extends MediaEvent {
 class AddPlaylistToMyList extends MediaEvent{
   Playlist playlist;
   bool isMyList;
-  AddPlaylistToMyList({@required this.playlist, @required this.isMyList}) : assert(playlist!=null && isMyList !=null);
+  String accountId;
+  AddPlaylistToMyList({@required this.playlist, @required this.isMyList,@required this.accountId}) : assert(playlist!=null && isMyList !=null && accountId != null);
 }

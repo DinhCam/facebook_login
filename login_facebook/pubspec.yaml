@@ -31,14 +31,21 @@ dependencies:
   firebase_core: ^0.4.0+9
   firebase_auth: ^0.14.0+5
   flutter_facebook_login: ^3.0.0
-  google_sign_in: ^4.0.11
+  google_sign_in: ^4.4.4
   flappy_search_bar: 1.4.1
   flutter_signin_button: ^1.0.0
   http: ^0.12.1
   basic_utils: ^1.5.1
   floating_search_bar: 0.3.0
   equatable: ^0.2.0
-  flutter_bloc: ^0.11.0
+  flutter_bloc: ^4.0.1
+  firebase_messaging: ^6.0.16
+  shared_preferences: ^0.5.7+3
+  flutter_firebase_iid: ^0.0.1
+  path_provider: 0.4.1
+  barcode_scan: ^3.0.1
+  flutter_barcode_scanner: ^1.0.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

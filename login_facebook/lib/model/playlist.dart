@@ -7,13 +7,11 @@ class Playlist {
   String CreateDate;
   bool IsDelete;
   int DateFillter;
-  String BrandId;
   int TimePlayed;
   String ImageUrl;
   Playlist(
       {this.Id,
       this.PlaylistName,
-      this.BrandId,
       this.CreateBy,
       this.DateFillter,
       this.ImageUrl,
@@ -24,9 +22,8 @@ class Playlist {
       this.TimePlayed});
   factory Playlist.fromJson(Map<String, dynamic> json) {
     return new Playlist(
-      Id: json['userId'],
+      Id: json['Id'],
       PlaylistName: json['PlaylistName'],
-      BrandId: json['BrandId'],
       CreateBy: json['CreateBy'],
       DateFillter: json['DateFillter'],
       ImageUrl: json['ImageUrl'],

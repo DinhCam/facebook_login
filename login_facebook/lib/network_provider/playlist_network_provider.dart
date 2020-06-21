@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
+import 'package:loginfacebook/setting/setting.dart';
 
 class PlayListNetWorkProvider {
   String baseUrl =
-      'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Playlists';
+      Setting.baseUrl+'Playlists';
 
   List<Playlist> userFavoritePlaylists = new List();
   List<Playlist> top3playlist = new List();
@@ -16,7 +17,7 @@ class PlayListNetWorkProvider {
 
   Future<List<Playlist>> getUserFavoritePlaylists() async {
     String url =
-        'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Playlists/users';
+        Setting.baseUrl+'Playlists/users';
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token

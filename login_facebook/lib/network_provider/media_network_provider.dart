@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
+import 'package:loginfacebook/setting/setting.dart';
 
 class MediaNetWorkProvider {
   String baseUrl =
-      'https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Media/';
+      Setting.baseUrl+'Media/';
 
   List<Media> listMedia = new List();
 

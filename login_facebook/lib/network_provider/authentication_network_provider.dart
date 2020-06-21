@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -7,6 +6,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:loginfacebook/setting/setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -24,7 +24,7 @@ final FirebaseMessaging _fcm = FirebaseMessaging();
 
 
 class AccountNetworkProvider{
-  String baseUrl ='https://audiostreaming-dev-as.azurewebsites.net/api/ver-1/Account/';
+  String baseUrl =Setting.baseUrl+'Account/';
   
   Future<UserAuthenticated> fetchUser(String IdToken, String fcmToken) async {
   String authenticateUrl = baseUrl+ 'authenticate';
@@ -94,6 +94,10 @@ Future<UserAuthenticated> signInWithGoogle() async {
     final tokenId =await user.getIdToken();
     final token = tokenId.token ; 
     currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
+    print("khanh abc");
+    print(currentUserWithToken.Id);
+    print(currentUserWithToken.FullName);
+    print(currentUserWithToken.PhoneNumber);
     prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {
       name = name.substring(0, name.indexOf(" "));

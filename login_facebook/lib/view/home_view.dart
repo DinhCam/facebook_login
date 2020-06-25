@@ -1,27 +1,3 @@
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:loginfacebook/bloc/authentication_bloc.dart';
-// import 'package:loginfacebook/bloc/home_page_event.dart';
-// import 'package:loginfacebook/bloc/home_page_state.dart';
-// import 'package:loginfacebook/bloc/playlist_bloc.dart';
-// import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
-// import 'package:loginfacebook/bloc/stores_bloc.dart';
-// import 'package:loginfacebook/model/playlist.dart';
-// import 'package:loginfacebook/model/store.dart';
-// import 'package:loginfacebook/repository/account_repository.dart';
-// import 'package:loginfacebook/repository/playlist_repository.dart';
-// import 'package:loginfacebook/repository/stores_repository.dart';
-// import 'package:loginfacebook/view/media_view.dart';
-// import 'package:loginfacebook/view/sign_in_view.dart';
-// import 'package:loginfacebook/states/stores_state.dart';
-// import 'package:loginfacebook/states/home_page_state.dart';
-// import 'package:loginfacebook/states/authentication_state.dart';
-
-
-
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +16,9 @@ import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/stores_state.dart';
+import 'package:loginfacebook/view/favorite_view.dart';
 import 'package:loginfacebook/view/media_view.dart';
+import 'package:loginfacebook/view/playlist_in_store_view.dart';
 import 'package:loginfacebook/view/sign_in_view.dart';
 import 'package:loginfacebook/events/home_page_event.dart';
 
@@ -80,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _storesBloc = StoresBloc(storesRepository: StoresRepository());
     _homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
     _homePageBloc.add(PageCreate());
+    _storesBloc.add(StatusCheckIn());
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
@@ -189,53 +168,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 backgroundColor: Colors.black26),
             backgroundColor: Colors.transparent,
-            bottomNavigationBar: new BottomNavigationBar(
-                // BottomNavigationBa
-                onTap: onTabTapped, // new
-                currentIndex: currentIndex,
-                showUnselectedLabels: true,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Image(
-                      image: AssetImage("assets/icons8-home-page-64.png"),
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text("Home",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17)),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image(
-                      image: AssetImage("assets/icons8-favorite-folder-64.png"),
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text("Favorite",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17)),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image(
-                      image: AssetImage("assets/qr-code.png"),
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text("Check in",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17)),
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Image(
-                      image: AssetImage("assets/userinfo.png"),
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text("Profile",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 17)),
-                  )
-                ]),
+            bottomNavigationBar: StreamBuilder(
+              stream: _storesBloc.statusCheckIn_stream,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return statusForCheckin(snapshot.data);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
             body: new SafeArea(
                 child: new ListView(children: <Widget>[
               Row(
@@ -406,12 +349,65 @@ class _HomeScreenState extends State<HomeScreen> {
         ]));
   }
 
+  Widget statusForCheckin(snapshot) {
+    return new BottomNavigationBar(
+        // BottomNavigationBa
+        onTap: onTabTapped, // new
+        currentIndex: currentIndex,
+        showUnselectedLabels: true,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image(
+              image: AssetImage("assets/icons8-home-page-64.png"),
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+            title: Text("Home",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          ),
+          BottomNavigationBarItem(
+            icon: Image(
+              image: AssetImage("assets/icons8-favorite-folder-64.png"),
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+            title: Text("Favorite",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          ),
+          BottomNavigationBarItem(
+            icon: Image(
+              image: 
+                  snapshot? AssetImage("assets/icons8-favorite-folder-64.png"): AssetImage("assets/qr-code.png"),
+                  
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+            title: Text(snapshot ? "My Favorite" : "Check in",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          ),
+          BottomNavigationBarItem(
+            icon: Image(
+              image: AssetImage("assets/userinfo.png"),
+              width: 40,
+              fit: BoxFit.cover,
+            ),
+            title: Text("Profile",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          )
+        ]);
+  }
+
   void onTabTapped(int index) async {
     setState(() {
       currentIndex = index;
     });
-    if (currentIndex == 2) {
+    if (currentIndex == 2 && checkedInStore == null) {
       await _storesBloc.add(QRCodeScan());
+    } else if (currentIndex == 2 && checkedInStore != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
+      );
     }
   }
 }
@@ -421,7 +417,8 @@ class ListViewHorizontal extends StatelessWidget {
   ListViewHorizontal({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    HomePageBloc homePageBloc = HomePageBloc(playlistRepository: PlaylistRepository());
+    HomePageBloc homePageBloc =
+        HomePageBloc(playlistRepository: PlaylistRepository());
     return Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
@@ -438,7 +435,7 @@ class ListViewHorizontal extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index])),
+                                  MediaPage(playlist: playlistsview[Index],curentMedia: null,page: 1,)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.transparent),
@@ -460,7 +457,7 @@ class ListViewHorizontal extends StatelessWidget {
 }
 
 class ListViewVertical extends StatelessWidget {
-  List<Playlist> playlistsview ;
+  List<Playlist> playlistsview;
   ListViewVertical({Key key, this.playlistsview}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -488,7 +485,7 @@ class ListViewVertical extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index])),
+                                  MediaPage(playlist: playlistsview[Index],curentMedia: null,page: 1)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),

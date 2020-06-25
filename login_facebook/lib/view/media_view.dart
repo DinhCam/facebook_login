@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/media_bloc.dart';
+import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/category_media.dart';
+import 'package:loginfacebook/model/current_media.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
+import 'package:loginfacebook/model/playlist_in_store.dart';
 import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
+import 'package:loginfacebook/view/playlist_in_store_view.dart';
 
 import 'home_view.dart';
 
 class MediaPage extends StatelessWidget {
   Playlist playlist;
-  MediaPage({Key key, @required this.playlist}) : super(key: key);
+  CurrentMedia curentMedia;
+  int page;
+  MediaPage({Key key, @required this.playlist,@required this.curentMedia,@required this.page}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +29,16 @@ class MediaPage extends StatelessWidget {
           primaryColorBrightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.transparent,
           canvasColor: Colors.black54),
-      home: new MediaView(playlist: playlist),
+      home: new MediaView(playlist: playlist,curentMedia: curentMedia,page: page),
     );
   }
 }
 
 class MediaView extends StatefulWidget {
   Playlist playlist;
-  MediaView({Key key, @required this.playlist}) : super(key: key);
+  CurrentMedia curentMedia;
+  int page;
+  MediaView({Key key, @required this.playlist,@required this.curentMedia,@required this.page}) : super(key: key);
   @override
   _MediaViewState createState() => _MediaViewState();
 }
@@ -38,6 +46,7 @@ class MediaView extends StatefulWidget {
 class _MediaViewState extends State<MediaView> {
   MediaBloc _mediaBloc;
   List<Media> listMedia = new List();
+  HomePageBloc _homePageBloc;
 
   bool isPress=false;
 
@@ -55,7 +64,13 @@ class _MediaViewState extends State<MediaView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    print("aaa");
+    if(widget.curentMedia!=null){
+      print(widget.curentMedia.mediaId);
+    }
+    print(widget.page);
+    return new WillPopScope(
+      child: new Scaffold(
       // backgroundColor: Colors.blue[1000],
         resizeToAvoidBottomPadding: false,
         appBar: new AppBar(
@@ -63,13 +78,21 @@ class _MediaViewState extends State<MediaView> {
           leading: new IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.push(
+              if(widget.page==1){
+                Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              }else if(widget.page==2){
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PlaylistInStoreView()),
               );
+              }
+              
             },
           ),
-        ),
+        ),       
         body: new Column(children: <Widget>[
           new Container(
             decoration: BoxDecoration(
@@ -128,7 +151,15 @@ class _MediaViewState extends State<MediaView> {
               return Center(child: CircularProgressIndicator());
             },
           ),
-        ]));
+        ])),
+        onWillPop: () async{
+          Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+          return true;
+        },
+    ); 
   }
 
   Widget buildList(snapshot) {
@@ -147,16 +178,14 @@ class _MediaViewState extends State<MediaView> {
                     (index + 1).toString() + ". " + listMedia[index].MusicName,style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
                 subtitle: new Text(
                     "  singer: "+listMedia[index].Singer + " ,author: " + listMedia[index].Author, style: TextStyle(fontSize: 14.0),),
-                leading: Icon(Icons.library_music),
+                // leading: Icon(Icons.library_music),
+                leading: currentPlay(widget.curentMedia, widget.playlist.Id, listMedia[index].Id),
                 trailing: getCategory(listMedia[index].getListCategoryMedia),
               ));
         }),
     );
   }
   Widget buildBt(snapshot){
-    print(snapshot);
-    print(currentUserWithToken.Id);
-    print(widget.playlist.Id);
     return new FlatButton(
       color: snapshot? Colors.green : Colors.red,
       disabledColor: Colors.grey,
@@ -178,6 +207,18 @@ class _MediaViewState extends State<MediaView> {
     });
     String s1=s.substring(0,s.length-1);
     return Text(s1, style: TextStyle(fontSize: 12),);
+  }
+  Icon currentPlay(CurrentMedia currentMedia,String playlisID, String mediaID){
+    if(currentMedia!=null){
+      if(playlisID == currentMedia.playlistId && mediaID == currentMedia.mediaId){
+      return new Icon(Icons.play_arrow, color: Colors.red, size: 40,);
+    }else{
+      return new Icon(Icons.play_arrow, color: Colors.white, size: 40,);
+    }
+    }else{
+      return Icon(Icons.library_music);
+    }
+    
   }
 
 }

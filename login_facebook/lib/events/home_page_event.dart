@@ -24,3 +24,11 @@ class GetPlaylistSuggets extends HomepageEvent {
   @override
   String toString() => 'GetPlaylistSuggets';
 }
+class ViewPlaylist extends HomepageEvent {
+  @override
+  String toString() => 'ViewPlaylist';
+}
+class OnPushEvent extends HomepageEvent {
+  @override
+  String toString() => 'ViewPlaylist';
+}

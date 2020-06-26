@@ -17,7 +17,7 @@ class PlayListNetWorkProvider {
 
   Future<List<Playlist>> getUserFavoritePlaylists() async {
     String url =
-        Setting.baseUrl+'Playlists/users';
+       baseUrl+'/users';
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token
@@ -91,7 +91,7 @@ class PlayListNetWorkProvider {
   }
   Future<List<Playlist>> getPlaylistsBySearchkey(String searchkey) async {
     String url = baseUrl +
-        '/'+searchkey;
+         '?IsSort=false&IsDescending=false&IsPaging=true&PageNumber=0&PageLimitItem=10&OrderBy=PlaylistName&SearchKey='+searchkey;
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
     });

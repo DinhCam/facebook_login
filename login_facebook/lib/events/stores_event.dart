@@ -14,3 +14,7 @@ class Init extends StoresEvent {
   @override
   String toString() => 'Init';
 }
+class StatusCheckIn extends StoresEvent{
+  @override
+  String toString() => 'StatusCheckIn';
+}

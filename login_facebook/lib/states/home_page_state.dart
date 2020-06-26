@@ -11,3 +11,9 @@ class LoadFinishState extends HomePageState {
 
 class CreateState extends HomePageState {
 }
+class ViewPlaylists extends HomePageState {
+}
+class OnPushState extends HomePageState {
+}
+
+

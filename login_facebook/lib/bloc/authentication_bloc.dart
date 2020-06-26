@@ -5,6 +5,8 @@ import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:wifi/wifi.dart';
+import 'package:wifi_configuration/wifi_configuration.dart';
 
 class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   AccountRepository accountRepository = AccountRepository();
@@ -38,8 +40,9 @@ class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
       yield* _mapLoggedOutToState();
     }
   }
-
+  
   Stream<AuthenticationState> _mapAppStartedToState() async* {
+    // WifiConnectionStatus connectionStatus = await WifiConfiguration.connectToWifi("DK", "1111999o", "com.audiostreaming.loginfacebook");
     try {
       final isSignedIn = await accountRepository.CheckLogin();
       if (isSignedIn == true){        

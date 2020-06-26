@@ -1,14 +1,16 @@
+import 'package:loginfacebook/model/media.dart';
 class Playlist {
-  String Id;
-  String PlaylistName;
-  String ModifyBy;
-  String ModifyDate;
-  String CreateBy;
-  String CreateDate;
-  bool IsDelete;
-  int DateFillter;
-  int TimePlayed;
-  String ImageUrl;
+  final String Id;
+  final String PlaylistName;
+  final String ModifyBy;
+  final String ModifyDate;
+  final String CreateBy;
+  final String CreateDate;
+  final bool IsDelete;
+  final int DateFillter;
+  final int TimePlayed;
+  final String ImageUrl;
+  List<Media> media = List<Media>();
   Playlist(
       {this.Id,
       this.PlaylistName,

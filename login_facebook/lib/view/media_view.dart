@@ -46,10 +46,7 @@ class _MediaViewState extends State<MediaView> {
     // TODO: implement initState
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
-    
     _mediaBloc.add(PageCreateMedia(playlist: widget.playlist));
-    
-    
   }
   
 
@@ -63,13 +60,13 @@ class _MediaViewState extends State<MediaView> {
           leading: new IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.push(
+              Navigator.pop(
                 context,
-                MaterialPageRoute(builder: (context) => HomePage()),
               );
             },
           ),
-        ),
+        backgroundColor: Colors.black26),
+              backgroundColor: Colors.transparent,
         body: new Column(children: <Widget>[
           new Container(
             decoration: BoxDecoration(
@@ -141,7 +138,11 @@ class _MediaViewState extends State<MediaView> {
           return Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               decoration:
-                  new BoxDecoration(color: Color.fromARGB(50, 187, 171, 201)),
+                  new BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(width: 1, color: Colors.black)
+                    ),
+                    color: Color.fromARGB(255, 255, 255, 255)),
               child: new ListTile(
                 title: new Text(
                     (index + 1).toString() + ". " + listMedia[index].MusicName,style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),

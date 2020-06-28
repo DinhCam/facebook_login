@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:loginfacebook/model/store.dart';
+import 'package:loginfacebook/setting/setting.dart';
 
 class StoresNetWorkProvider {
   String baseUrl =
-      'https://audiostreaming-dev-as.azurewebsites.net/api/Stores';
+      Setting.baseUrl+'Stores/';
  Future<Store> getStoreById(String storeId) async {
     String url =baseUrl+
         '/'+storeId;

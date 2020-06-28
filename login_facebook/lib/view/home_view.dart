@@ -6,9 +6,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/stores_bloc.dart';
-import 'package:loginfacebook/events/authentication_event.dart';
 import 'package:loginfacebook/events/stores_event.dart';
-import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/model/store.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
@@ -21,10 +19,8 @@ import 'package:loginfacebook/view/app_drawer.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/playlist_in_store_view.dart';
 import 'package:loginfacebook/view/search_playlist_widget.dart';
-import 'package:loginfacebook/view/sign_in_view.dart';
 import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/view/brands_view.dart';
-import 'package:wifi_configuration/wifi_configuration.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -192,17 +188,27 @@ class _HomeScreenState extends State<HomeScreen> {
             body: new SafeArea(
                 child: new ListView(children: <Widget>[
               new Container(
-                  padding: const EdgeInsets.only(top: 10.0),
+                 // padding: const EdgeInsets.only(top: 10.0),
                   margin: const EdgeInsets.only(left: 0, right: 0, top: 10),
                   child: Column(
                     children: <Widget>[
                       Container(
-                        alignment: Alignment.topCenter,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                            color: Color.fromARGB(100, 187, 171, 201),
+                                
+                        ),
+                        padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        
+                        alignment: Alignment.centerLeft,
                         child: Text(
                           "Your favorite",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.none,
                           ),
@@ -220,16 +226,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   )),
               new Container(
-                  padding: const EdgeInsets.only(top: 10.0),
+                  padding: const EdgeInsets.only(top: 5.0),
                   child: Column(
                     children: <Widget>[
                       Container(
-                        alignment: Alignment.topCenter,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                            color: Color.fromARGB(100, 187, 171, 201),
+                                
+                        ),
+                        padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        
+                        alignment: Alignment.centerLeft,
                         child: Text(
                           "Top 3 Playlist",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.none,
                           ),
@@ -247,16 +263,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   )),
               new Container(
-                  padding: const EdgeInsets.only(top: 10.0),
+                  padding: const EdgeInsets.only(top: 5.0),
                   child: Column(children: <Widget>[
                     new Container(
-                      alignment: Alignment.topCenter,
-                      // margin: const EdgeInsets.only(left: 30, right: 0, top: 260),
+                      decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                            color: Color.fromARGB(100, 187, 171, 201),
+                                
+                        ),
+                        padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        
+                        alignment: Alignment.centerLeft,
                       child: Text(
                         "Playlist",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none,
                         ),
@@ -287,40 +312,40 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/icons8-home-page-64.png"),
-              width: MediaQuery.of(context).size.width*0.10,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
             title: Text("Home",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/icons8-video-playlist-64.png"),
-              width: MediaQuery.of(context).size.width*0.10,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
-            title: Text("Playlist",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+            title: Text("Playlists",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
-              image: 
-                  snapshot? AssetImage("assets/icons8-favorite-folder-64.png"): AssetImage("assets/qr-code.png"),
-                  
-              width:MediaQuery.of(context).size.width*0.10,
+              image: snapshot
+                  ? AssetImage("assets/icons8-play-button-circled-96.png")
+                  : AssetImage("assets/qr-code.png"),
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
-            title: Text(snapshot ? "Playlist Store" : "Check in",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+            title: Text(snapshot ? "Current Store" : "Check in",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/userinfo.png"),
-              width: MediaQuery.of(context).size.width*0.10,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
             title: Text("Profile",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           )
         ]);
   }
@@ -336,15 +361,14 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
       );
-    }
-    else if (currentIndex == 1) {
+    } else if (currentIndex == 1) {
       _homePageBloc.add(ViewPlaylist());
     } else if (currentIndex == 0) {
       _homePageBloc.add(PageCreate());
     }
     currentIndex = 0;
-  
-}}
+  }
+}
 
 class ListViewHorizontal extends StatelessWidget {
   List<Playlist> playlistsview;
@@ -363,15 +387,17 @@ class ListViewHorizontal extends StatelessWidget {
             itemBuilder: (BuildContext ctxt, int Index) {
               return new Container(
                   decoration: _boxDecoration(Index),
-                  margin: const EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(right: 5),
                   child: new OutlineButton(
                       splashColor: Colors.grey,
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  MediaView(playlist: playlistsview[Index],curentMedia: null,page: 1,)),
+                              builder: (context) => MediaView(
+                                    playlist: playlistsview[Index],
+                                    page: 1,
+                                  )),
                         );
                       },
                       borderSide: BorderSide(color: Colors.transparent),
@@ -404,34 +430,30 @@ class ListViewHorizontal extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.centerLeft,
             colors: [
-              Hexcolor("#6c9768"),
-              Hexcolor("#6c9768"),
+              Hexcolor("#818279"),
+              Hexcolor("#818279"),
             ],
           ));
     } else if (them == 1) {
       return new BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-
           gradient: LinearGradient(
             begin: Alignment.centerRight,
             end: Alignment.bottomCenter,
             colors: [
-              Hexcolor("#3c0275"),
-              Hexcolor("#3c0275"),
+              Hexcolor("#737994"),
+              Hexcolor("#737994"),
             ],
           ));
     } else if (them == 2) {
       return new BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.centerLeft,
             colors: [
               Colors.blueGrey,
               Colors.blueGrey,
-
-
             ],
           ));
     } else if (them == 3) {
@@ -441,17 +463,13 @@ class ListViewHorizontal extends StatelessWidget {
             begin: Alignment.centerRight,
             end: Alignment.bottomCenter,
             colors: [
-
               Hexcolor("#25664c"),
               Hexcolor("#25664c"),
-
-
             ],
           ));
     }
   }
-  }
-
+}
 
 class ListViewVertical extends StatelessWidget {
   List<Playlist> playlistsview;
@@ -459,14 +477,14 @@ class ListViewVertical extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(top: 15),
+        margin: const EdgeInsets.only(top: 5),
         padding: const EdgeInsets.only(bottom: 10),
         alignment: Alignment.topCenter,
         child: ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
+            padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
             itemCount: playlistsview.length,
             itemBuilder: (BuildContext ctxt, int Index) {
               return new Container(
@@ -481,8 +499,9 @@ class ListViewVertical extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  MediaView(playlist: playlistsview[Index],curentMedia: null,page: 1)),
+                              builder: (context) => MediaView(
+                                  playlist: playlistsview[Index],                                 
+                                  page: 1)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),
@@ -506,5 +525,3 @@ class ListViewVertical extends StatelessWidget {
             }));
   }
 }
-
-

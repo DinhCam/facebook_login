@@ -93,7 +93,7 @@ class ListViewVertical extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  MediaPage(playlist: playlistsview[Index])),
+                                  MediaPage(playlist: playlistsview[Index], page: 1,)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),

@@ -4,13 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loginfacebook/bloc/authentication_bloc.dart';
 import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/playlists_bloc.dart';
-import 'package:loginfacebook/bloc/search_playlist_bloc.dart';
 import 'package:loginfacebook/bloc/stores_bloc.dart';
 import 'package:loginfacebook/events/authentication_event.dart';
-import 'package:loginfacebook/events/home_page_event.dart';
 import 'package:loginfacebook/events/playlists_event.dart';
-import 'package:loginfacebook/events/stores_event.dart';
-import 'package:loginfacebook/model/brand.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/model/store.dart';
@@ -21,7 +17,6 @@ import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/playlists_state.dart';
 import 'package:loginfacebook/states/stores_state.dart';
-import 'package:loginfacebook/view/app_drawer.dart';
 import 'package:loginfacebook/view/home_view.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/search_playlist_widget.dart';
@@ -272,7 +267,7 @@ class PlaylistsListViewVertical extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => MediaView(
-                                      playlist: playlistsview[Index])),
+                                      playlist: playlistsview[Index], page: 1,)),
                             );
                           },
                           child: Row(

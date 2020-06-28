@@ -1,20 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:loginfacebook/bloc/media_bloc.dart';
-import 'package:loginfacebook/bloc/playlist_bloc.dart';
 import 'package:loginfacebook/bloc/playlist_in_store_bloc.dart';
 import 'package:loginfacebook/bloc/stores_bloc.dart';
-import 'package:loginfacebook/events/home_page_event.dart';
-import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/events/playlist_in_store_event.dart';
-import 'package:loginfacebook/model/category_media.dart';
 import 'package:loginfacebook/model/category_playlist.dart';
 import 'package:loginfacebook/model/current_media.dart';
-import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/model/playlist_in_store.dart';
-import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
 import 'package:loginfacebook/repository/current_media_repository.dart';
-import 'package:loginfacebook/repository/media_repository.dart';
 import 'package:loginfacebook/repository/playlist_in_store_repository.dart';
 
 import 'home_view.dart';
@@ -45,6 +39,7 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   PlaylistInStoreBloc _playlistInStoreBloc;
   List<PlaylistInStore> listPIS;
   List<CurrentMedia> listCurrentMedia;
+  Timer timerCallApi;
   @override
   void initState() {
     super.initState();
@@ -52,91 +47,86 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
         playlistInStoreRepo: PlaylistInStoreRepository(),
         currentMediaRepo: CurrentMediaRepository());
     _playlistInStoreBloc.add(PageCreatePIS(store: checkedInStore));
+    setUpTimedFetch();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if (timerCallApi != null) {
+      timerCallApi.cancel();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        resizeToAvoidBottomPadding: false,
-        appBar: new AppBar(
-          title: new Text("Playlist in store"),
-          leading: new IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
-            },
-          ),
+      resizeToAvoidBottomPadding: false,
+      appBar: new AppBar(
+        title: new Text("Playlist in store"),
+        leading: new IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+          },
         ),
-        body: new Column(children: <Widget>[
-          new Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
+      ),
+      body: new Column(children: <Widget>[
+        new Container(
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage(
+                      "assets/pngtree-purple-brilliant-background-image_257402.jpg"),
+                  fit: BoxFit.cover)),
+          child: new Column(
+            children: <Widget>[
+              new Container(
+                alignment: Alignment.topCenter,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.25,
+                decoration: new BoxDecoration(
+                  image: new DecorationImage(
                     image: AssetImage(
                         "assets/pngtree-purple-brilliant-background-image_257402.jpg"),
-                    fit: BoxFit.cover)),
-            child: new Column(
-              children: <Widget>[
-                new Container(
-                  alignment: Alignment.topCenter,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  decoration: new BoxDecoration(
-                    image: new DecorationImage(
-                      image: AssetImage(
-                          "assets/pngtree-purple-brilliant-background-image_257402.jpg"),
-                      fit: BoxFit.fitWidth,
-                    ),
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
-                new Container(
-                  decoration: new BoxDecoration(
-                      color: Color.fromARGB(100, 187, 171, 201)),
-                  padding: EdgeInsets.fromLTRB(32, 10, 30, 10),
-                  child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      new Text(
-                        checkedInStore.StoreName,
-                        style: TextStyle(fontSize: 26.0),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+              ),
+              new Container(
+                decoration: new BoxDecoration(
+                    color: Color.fromARGB(100, 187, 171, 201)),
+                padding: EdgeInsets.fromLTRB(32, 10, 30, 10),
+                child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    new Text(
+                      checkedInStore.StoreName,
+                      style: TextStyle(fontSize: 26.0),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-          StreamBuilder(
-                    stream: _playlistInStoreBloc.currentMedia_stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        listCurrentMedia=snapshot.data;
-                        print("object");
-                        print(listCurrentMedia[0].playlistId);
-                        return new Container();
-                      } else if (snapshot.hasError) {
-                        return Text(snapshot.error.toString());
-                      }
-                      return Center(child: CircularProgressIndicator());
-                    },
-                  ),
-          StreamBuilder(
-            stream: _playlistInStoreBloc.pis_stream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                
-                listPIS = snapshot.data;
-                return buildList(snapshot);
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              }
-              return Center(child: CircularProgressIndicator());
-            },
-          ),
-        ]),
-        bottomNavigationBar: BottomNavigationBar(
+        ),
+        StreamBuilder(
+          stream: _playlistInStoreBloc.pis_stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              listPIS = snapshot.data;
+              return buildList(snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
+      ]),
+      bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -154,8 +144,8 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
         // currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],
         // onTap: _onItemTapped,
-        ),
-        );
+      ),
+    );
   }
 
   Widget buildList(snapshot) {
@@ -178,20 +168,20 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
                           fontSize: 17.0, fontWeight: FontWeight.bold)),
                   subtitle: getCategory(listPIS[index].listCategoryPlaylists),
                   leading: Icon(Icons.library_music),
-                  trailing: currentPlay(listCurrentMedia[0], listPIS[index]),
-                  onTap: (){
-                    Playlist playlist =new Playlist(
+                  trailing: currentPlay(listPIS[index]),
+                  onTap: () {
+                    Playlist playlist = new Playlist(
                       Id: listPIS[index].playlistId,
                       PlaylistName: listPIS[index].playlistName,
-                      ImageUrl: listPIS[index].imageUrl,                     
+                      ImageUrl: listPIS[index].imageUrl,
+                    );                   
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MediaPage(
+                              playlist: playlist,                            
+                              page: 2)),
                     );
-                    int x=2;
-                    Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  MediaPage(playlist: playlist,curentMedia: listCurrentMedia[0],page: x)),
-                        );
                   },
                 ));
           }),
@@ -209,11 +199,44 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
       style: TextStyle(fontSize: 12),
     );
   }
-  Icon currentPlay(CurrentMedia currentMedia,PlaylistInStore list){
-    if(list.playlistId == currentMedia.playlistId){
-      return new Icon(Icons.play_arrow, color: Colors.red, size: 40,);
-    }else{
-      return new Icon(Icons.play_arrow, color: Colors.white, size: 40,);
+
+  Icon currentPlay(PlaylistInStore list) {
+    if (list.playlistId == listCurrentMedia[0].playlistId) {
+      return new Icon(
+        Icons.play_arrow,
+        color: Colors.red,
+        size: 40,
+      );
+    } else {
+      return new Icon(
+        Icons.play_arrow,
+        color: Colors.white,
+        size: 40,
+      );
     }
+  }
+
+  setUpTimedFetch() async {
+    int timeToCall=10000;
+    await getCurrentMedia();
+    if (listCurrentMedia != null) {
+      timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+    }
+    print(timeToCall);
+    timerCallApi =
+        Timer.periodic(Duration(milliseconds: timeToCall), (timerCallApi) {
+      print("call api");
+      setState(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
+        );
+      });
+    });
+  }
+  getCurrentMedia() async{
+    CurrentMediaRepository repo=CurrentMediaRepository();
+    final rs= await repo.getCurrentMediabyStoreId(checkedInStore.Id);
+    listCurrentMedia=rs;
   }
 }

@@ -45,10 +45,21 @@ dependencies:
   path_provider: 0.4.1
   barcode_scan: ^3.0.1
   flutter_barcode_scanner: ^1.0.1
+  hexcolor: ^1.0.4
+  wifi_configuration: ^1.2.1
+  wifi: ^0.1.5
+  
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.7.5
+
+  
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logo_aus.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,16 +91,26 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+    # - family: Schyler
+    #   fonts:
+    #     - asset: fonts/Schyler-Regular.ttf
+    #     - asset: fonts/Schyler-Italic.ttf
+    #       style: italic
+    # - family: Trajan Pro
+    #   fonts:
+    #     - asset: fonts/TrajanPro.ttf
+    #     - asset: fonts/TrajanPro_Bold.ttf
+    #       weight: 700
+    # - family: Raleway
+    #   fonts:
+    #     - asset: fonts/Raleway-Regular.ttf
+    #     - asset: fonts/Raleway-Italic.ttf
+    #       style: italic
+    # - family: RobotoMono
+    #   fonts:
+    #     - asset: fonts/RobotoMono-Regular.ttf
+    #     - asset: fonts/RobotoMono-Bold.ttf
+    #       weight: 700
+  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

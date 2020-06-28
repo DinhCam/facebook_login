@@ -25,3 +25,8 @@ class QRScanCancel extends StoresState {
 
   QRScanCancel(this.messages) : super([messages]);
 }
+class CheckIn extends StoresState{
+  final String messages;
+
+  CheckIn(this.messages) : super([messages]);
+}

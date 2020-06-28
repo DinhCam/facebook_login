@@ -29,11 +29,11 @@ class _SignInScreen extends State<SignInScreen> {
         bloc: _authenticationBloc,
         listener: (BuildContext context, AuthenticationState state) {
           if (state is Authenticated == true) {
-            Navigator.pop(
-              context,
-              MaterialPageRoute(builder: (context) => SignInScreen()),
-            );
-            Navigator.push(
+            // Navigator.pop(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => SignInScreen()),
+            // );
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
             );

@@ -1,13 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:loginfacebook/bloc/media_bloc.dart';
-import 'package:loginfacebook/bloc/playlist_bloc.dart';
+import 'package:loginfacebook/bloc/stores_bloc.dart';
 import 'package:loginfacebook/events/media_event.dart';
 import 'package:loginfacebook/model/category_media.dart';
 import 'package:loginfacebook/model/current_media.dart';
 import 'package:loginfacebook/model/media.dart';
 import 'package:loginfacebook/model/playlist.dart';
-import 'package:loginfacebook/model/playlist_in_store.dart';
 import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
+import 'package:loginfacebook/repository/current_media_repository.dart';
 import 'package:loginfacebook/repository/media_repository.dart';
 import 'package:loginfacebook/view/playlist_in_store_view.dart';
 
@@ -15,12 +17,10 @@ import 'home_view.dart';
 
 class MediaPage extends StatelessWidget {
   Playlist playlist;
-  CurrentMedia curentMedia;
   int page;
   MediaPage(
       {Key key,
       @required this.playlist,
-      @required this.curentMedia,
       @required this.page})
       : super(key: key);
 
@@ -35,19 +35,17 @@ class MediaPage extends StatelessWidget {
           scaffoldBackgroundColor: Colors.transparent,
           canvasColor: Colors.black54),
       home: new MediaView(
-          playlist: playlist, curentMedia: curentMedia, page: page),
+          playlist: playlist, page: page),
     );
   }
 }
 
 class MediaView extends StatefulWidget {
   Playlist playlist;
-  CurrentMedia curentMedia;
   int page;
   MediaView(
       {Key key,
       @required this.playlist,
-      @required this.curentMedia,
       @required this.page})
       : super(key: key);
   @override
@@ -56,9 +54,9 @@ class MediaView extends StatefulWidget {
 
 class _MediaViewState extends State<MediaView> {
   MediaBloc _mediaBloc;
-  List<Media> listMedia = new List();
-  HomePageBloc _homePageBloc;
-
+  List<Media> listMedia;
+  Timer timerCallApi;
+  List<CurrentMedia> listCurrentMedia;
   bool isPress = false;
 
   @override
@@ -67,15 +65,23 @@ class _MediaViewState extends State<MediaView> {
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
     _mediaBloc.add(PageCreateMedia(playlist: widget.playlist));
+    if(widget.page!=1){
+      setUpTimedFetch();
+    }
+    
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if (timerCallApi != null) {
+      timerCallApi.cancel();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("aaa");
-    if (widget.curentMedia != null) {
-      print(widget.curentMedia.mediaId);
-    }
-    print(widget.page);
     return new WillPopScope(
       child: new Scaffold(
           // backgroundColor: Colors.blue[1000],
@@ -191,7 +197,7 @@ class _MediaViewState extends State<MediaView> {
                     style: TextStyle(fontSize: 14.0,color: Colors.black),
                   ),
                   // leading: Icon(Icons.library_music),
-                  leading: currentPlay(widget.curentMedia, widget.playlist.Id,
+                  leading: currentPlay(listCurrentMedia, widget.playlist.Id,
                       listMedia[index].Id),
                   trailing: getCategory(listMedia[index].getListCategoryMedia),
                 ));
@@ -232,10 +238,10 @@ class _MediaViewState extends State<MediaView> {
   }
 
   Icon currentPlay(
-      CurrentMedia currentMedia, String playlisID, String mediaID) {
+      List<CurrentMedia> currentMedia, String playlisID, String mediaID) {
     if (currentMedia != null) {
-      if (playlisID == currentMedia.playlistId &&
-          mediaID == currentMedia.mediaId) {
+      if (playlisID == currentMedia[0].playlistId &&
+          mediaID == currentMedia[0].mediaId) {
         return new Icon(
           Icons.play_arrow,
           color: Colors.red,
@@ -251,5 +257,30 @@ class _MediaViewState extends State<MediaView> {
     } else {
       return Icon(Icons.library_music, color: Colors.black,);
     }
+  }
+  setUpTimedFetch() async {
+    int timeToCall=10000;
+    await getCurrentMedia();
+    if (listCurrentMedia != null) {
+      timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+    }
+    print(timeToCall);
+    timerCallApi =
+        Timer.periodic(Duration(milliseconds: timeToCall), (timerCallApi) {
+      print("call api media");
+      setState(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MediaView(
+                                  playlist: widget.playlist,                                 
+                                  page: 2)),
+        );
+      });
+    });
+  }
+  getCurrentMedia() async{
+    CurrentMediaRepository repo=CurrentMediaRepository();
+    final rs= await repo.getCurrentMediabyStoreId(checkedInStore.Id);
+    listCurrentMedia=rs;
   }
 }

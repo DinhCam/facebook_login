@@ -9,6 +9,7 @@ import 'package:loginfacebook/repository/playlist_in_store_repository.dart';
 import 'package:loginfacebook/states/playlist_in_store_state.dart';
 import 'package:bloc/bloc.dart';
 
+
 class PlaylistInStoreBloc extends Bloc<PlaylistInStoreEvent, PlaylistInStoreState>{
   PlaylistInStoreRepository _playlistInStoreRepo = PlaylistInStoreRepository();
   CurrentMediaRepository _currentMediaRepo= CurrentMediaRepository();

@@ -5,8 +5,7 @@ import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'package:loginfacebook/repository/account_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:wifi/wifi.dart';
-import 'package:wifi_configuration/wifi_configuration.dart';
+
 
 class AuthenticateBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   AccountRepository accountRepository = AccountRepository();

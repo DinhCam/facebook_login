@@ -24,3 +24,17 @@ class LoadPlaylistsSubDetail extends PlaylistsEvent {
   @override
   String toString() => 'LoadPlaylistsSubDetail';
 }
+
+class LoadSubcribeTopicEvent extends PlaylistsEvent {
+  BuildContext context;
+  String channel;
+  LoadSubcribeTopicEvent({Key key, @required this.channel,@required this.context});
+   @override
+  String toString() => 'LoadSubcribeTopic';
+}
+class ChageStatusSubcribe extends PlaylistsEvent{
+  BuildContext context;
+  bool isSubcribe;
+  String channel;
+  ChageStatusSubcribe({Key key, @required this.channel,@required this.isSubcribe,@required this.context});
+}

@@ -48,6 +48,7 @@ dependencies:
   hexcolor: ^1.0.4
   wifi_configuration: ^1.2.1
   wifi: ^0.1.5
+  cloud_firestore: ^0.13.6
   
   
 dev_dependencies:

@@ -19,3 +19,22 @@ class LoadPlaylistsSubDetailFinishState  extends PlaylistState {
   List<Playlist> playlists;
   LoadPlaylistsSubDetailFinishState({Key key, @required this.playlists});
 }
+
+class LoadSubcribeTopicState extends PlaylistState {
+  BuildContext context;
+  bool isSubcribe;
+  String brandName;
+  LoadSubcribeTopicState({Key key, @required this.isSubcribe,@required this.context,@required this.brandName});
+}
+
+class ChangeSuccess extends PlaylistState{
+  BuildContext context;
+  bool isSubcribe;
+  String brandName;
+  ChangeSuccess({Key key, @required this.isSubcribe,@required this.context,@required this.brandName});
+}
+
+class ChangeError extends PlaylistState{
+  String error;
+  ChangeError({Key key, @required this.error});
+}

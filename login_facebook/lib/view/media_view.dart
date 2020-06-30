@@ -18,10 +18,7 @@ import 'home_view.dart';
 class MediaPage extends StatelessWidget {
   Playlist playlist;
   int page;
-  MediaPage(
-      {Key key,
-      @required this.playlist,
-      @required this.page})
+  MediaPage({Key key, @required this.playlist, @required this.page})
       : super(key: key);
 
   @override
@@ -34,8 +31,7 @@ class MediaPage extends StatelessWidget {
           primaryColorBrightness: Brightness.dark,
           scaffoldBackgroundColor: Colors.transparent,
           canvasColor: Colors.black54),
-      home: new MediaView(
-          playlist: playlist, page: page),
+      home: new MediaView(playlist: playlist, page: page),
     );
   }
 }
@@ -43,10 +39,7 @@ class MediaPage extends StatelessWidget {
 class MediaView extends StatefulWidget {
   Playlist playlist;
   int page;
-  MediaView(
-      {Key key,
-      @required this.playlist,
-      @required this.page})
+  MediaView({Key key, @required this.playlist, @required this.page})
       : super(key: key);
   @override
   _MediaViewState createState() => _MediaViewState();
@@ -65,10 +58,9 @@ class _MediaViewState extends State<MediaView> {
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
     _mediaBloc.add(PageCreateMedia(playlist: widget.playlist));
-    if(widget.page!=1){
+    if (widget.page != 1) {
       setUpTimedFetch();
     }
-    
   }
 
   @override
@@ -188,13 +180,15 @@ class _MediaViewState extends State<MediaView> {
                           ". " +
                           listMedia[index].MusicName,
                       style: TextStyle(
-                          fontSize: 17.0, fontWeight: FontWeight.bold,color: Colors.black)),
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black)),
                   subtitle: new Text(
                     "  singer: " +
                         listMedia[index].Singer +
                         " ,author: " +
                         listMedia[index].Author,
-                    style: TextStyle(fontSize: 14.0,color: Colors.black),
+                    style: TextStyle(fontSize: 14.0, color: Colors.black),
                   ),
                   // leading: Icon(Icons.library_music),
                   leading: currentPlay(listCurrentMedia, widget.playlist.Id,
@@ -255,11 +249,15 @@ class _MediaViewState extends State<MediaView> {
         );
       }
     } else {
-      return Icon(Icons.library_music, color: Colors.black,);
+      return Icon(
+        Icons.library_music,
+        color: Colors.black,
+      );
     }
   }
+
   setUpTimedFetch() async {
-    int timeToCall=10000;
+    int timeToCall = 10000;
     await getCurrentMedia();
     if (listCurrentMedia != null) {
       timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
@@ -271,16 +269,17 @@ class _MediaViewState extends State<MediaView> {
       setState(() {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MediaView(
-                                  playlist: widget.playlist,                                 
-                                  page: 2)),
+          MaterialPageRoute(
+              builder: (context) =>
+                  MediaView(playlist: widget.playlist, page: 2)),
         );
       });
     });
   }
-  getCurrentMedia() async{
-    CurrentMediaRepository repo=CurrentMediaRepository();
-    final rs= await repo.getCurrentMediabyStoreId(checkedInStore.Id);
-    listCurrentMedia=rs;
+
+  getCurrentMedia() async {
+    CurrentMediaRepository repo = CurrentMediaRepository();
+    final rs = await repo.getCurrentMediabyStoreId(checkedInStore.Id);
+    listCurrentMedia = rs;
   }
 }

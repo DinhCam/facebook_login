@@ -258,10 +258,13 @@ class BransListViewVertical extends StatelessWidget {
   PlaylistsBloc _playlistsbloc =
       PlaylistsBloc(brandRepository: BrandRepository());
   List<Brand> brandsview;
-  final FirebaseMessaging _fcm = FirebaseMessaging();
   BransListViewVertical({Key key, this.brandsview}) : super(key: key);
+  String error;
+  
+
   @override
   Widget build(BuildContext context) {
+     
     return MultiBlocListener(
         listeners: [
           BlocListener(
@@ -274,6 +277,16 @@ class BransListViewVertical extends StatelessWidget {
                         builder: (context) =>
                             (PlaylistsView(playlists: state.playlists))),
                   );
+                }
+                if (state is LoadSubcribeTopicState){
+                  loadStatusSubcribe(state.context,state.isSubcribe , state.brandName);
+                }
+                if (state is ChangeSuccess){    
+                  Navigator.pop(state.context);            
+                  loadStatusSubcribe(state.context,state.isSubcribe , state.brandName);
+                }
+                if (state is ChangeError){                
+                  error=state.error;
                 }
               },
               child: null),
@@ -298,72 +311,10 @@ class BransListViewVertical extends StatelessWidget {
                       child: new RaisedButton(
                           color: Colors.transparent,
                           splashColor: Colors.lightBlue,
-                          onLongPress: () {
-                            //bool isSubs= _fcm.subscribeToTopic(brandsview[Index].brandName).whenComplete(() =>  true);
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return new SafeArea(
-                                      child: Container(
-                                          width: 400,
-                                          height: 60,
-                                          color: Colors.black87,
-                                          margin: const EdgeInsets.only(top: 3),
-                                          alignment: Alignment.topCenter,
-                                          child: Row(children: <Widget>[
-                                            new Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.1,
-                                              child: Image(
-                                                  image: AssetImage(
-                                                      'assets/icons8-push-notifications-64.png'),
-                                                  width: 60.0,
-                                                  height: 60.0,
-                                                  fit: BoxFit.fitHeight),
-                                            ),
-                                            new Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.7,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 5),
-                                                  child: Text(
-                                                    'Subcribe ' +
-                                                        brandsview[Index]
-                                                            .brandName +
-                                                        '.',
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.white,
-                                                    ),
-                                                    overflow: TextOverflow.clip,
-                                                  ),
-                                                )),
-                                            new Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.15,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 0),
-                                                  child: new Switch(
-                                                      onChanged: (value) {
-                                                        _fcm.subscribeToTopic(
-                                                            brandsview[Index]
-                                                                .brandName);
-                                                        value = false;
-                                                      },
-                                                      value: true),
-                                                )),
-                                          ])));
-                                });
+                          onLongPress: () async{
+                            _playlistsbloc.add(LoadSubcribeTopicEvent(channel: brandsview[Index].brandName, context: context));
+                            
+                            
                           },
                           onPressed: () {
                             if (brandsview[Index].playlists != null) {
@@ -408,10 +359,6 @@ class BransListViewVertical extends StatelessWidget {
                                 ),
                               ))));
                 })));
-  }
-
-  Future<String> getToken() async {
-    return await _fcm.getToken();
   }
 
   BoxDecoration _boxDecoration(int index) {
@@ -470,4 +417,69 @@ class BransListViewVertical extends StatelessWidget {
           ));
     }
   }
+ loadStatusSubcribe(context, snapshot, brandName) async{
+    return showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return new SafeArea(
+          child: Container(
+              width: 400,
+              height: 60,
+              color: Colors.black87,
+              margin: const EdgeInsets.only(top: 3),
+              alignment: Alignment.topCenter,
+              child: Row(children: <Widget>[
+                new Container(
+                  width: MediaQuery.of(context)
+                          .size
+                          .width *
+                      0.1,
+                  child: Image(
+                      image: AssetImage(
+                          'assets/icons8-push-notifications-64.png'),
+                      width: 60.0,
+                      height: 60.0,
+                      fit: BoxFit.fitHeight),
+                ),
+                new Container(
+                    width: MediaQuery.of(context)
+                            .size
+                            .width *
+                        0.7,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(
+                              left: 5),
+                      child: Text(
+                        'Subcribe ' +
+                            brandName +
+                            '.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.clip,
+                      ),
+                    )),
+                new Container(
+                    width: MediaQuery.of(context)
+                            .size
+                            .width *
+                        0.15,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(
+                              right: 0),
+                      child: new Switch(
+                          onChanged: (value) {
+                            _playlistsbloc.add(ChageStatusSubcribe(isSubcribe: snapshot, channel: brandName, context: context));
+                            value=true;
+                          },
+                          value: snapshot)
+                    )),
+              ])));
+    });
+  }
+
+  
 }

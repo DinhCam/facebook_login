@@ -244,7 +244,6 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   }
 
   Icon currentPlay(PlaylistInStore list) {
-    print("cai lol");
     if (list.playlistId == listCurrentMedia[0].playlistId) {
       return new Icon(
         Icons.play_circle_outline,
@@ -263,14 +262,14 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   setUpTimedFetch() async {
     int timeToCall = 10000;
     await getCurrentMedia();
-    print("cai cc");
     if (listCurrentMedia != null) {
-      timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+      if(!listCurrentMedia.isEmpty){
+        timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+      }      
     }
     print(timeToCall);
     timerCallApi =
         Timer.periodic(Duration(milliseconds: timeToCall), (timerCallApi) {
-      print("call api");
       setState(() {
         Navigator.pushReplacement(
           context,
@@ -281,7 +280,6 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   }
 
   getCurrentMedia() async {
-    print("pass here");
     CurrentMediaRepository repo = CurrentMediaRepository();
     final rs = await repo.getCurrentMediabyStoreId(checkedInStore.Id);
     listCurrentMedia = rs;

@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (currentIndex == 2 && checkedInStore == null) {
       await _storesBloc.add(QRCodeScan());
     } else if (currentIndex == 2 && checkedInStore != null) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
       );

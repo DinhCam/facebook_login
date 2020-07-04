@@ -71,30 +71,19 @@ class _FavoritePageState extends State<FavoritePage> {
           bloc: _playlistInStoreBloc,
           listener: (BuildContext context, PlaylistInStoreState state) {
             if (state is SubmitSuccess) {
+              Utils.utilShowDialog("Submit Success", "Your favorite submit successfully", context);
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => FavoriteView()),
               );
             }
-            if (state is SubmitWrongBrand) {
-              // showDialog(
-              //   context: context,
-              //   builder: (context) => AlertDialog(
-              //     content: ListTile(
-              //       title: Text("Submit fail"),
-              //       subtitle: Text(state.error),
-              //     ),
-              //     actions: <Widget>[
-              //       FlatButton(
-              //         child: Text('Ok'),
-              //         onPressed: () => Navigator.of(context).pop(),
-              //       ),
-              //     ],
-              //   ),
-              // );
-              Utils.utilShowDialog("Submit fail", state.error, context);
+            if (state is SubmitWrongBrand) { 
+
+              Utils.utilShowDialog("Submit Fail", "Only accept brand :"+state.error, context);
             }
-            if (state is SubmitFail) {}
+            if (state is SubmitFail) {
+              Utils.utilShowDialog("Submit Error", "Error", context);
+            }
           },
           child: new Container(),
         ),
@@ -160,19 +149,34 @@ class _FavoritePageState extends State<FavoritePage> {
 
 Widget buildStatusSubmit(String snapshot, bloc, list,context) {
   if (snapshot == "CanSubmit") {
-    return FlatButton(
-        color: Colors.blue,
-        textColor: Colors.white,
-        disabledColor: Colors.grey,
-        disabledTextColor: Colors.black,
-        padding: EdgeInsets.all(8.0),
-        splashColor: Colors.blueAccent,
-      child: new Text("Submit", style: TextStyle(color: Colors.white),),
-      onPressed: (){
-        Utils.utilShowDialog("Submit Success", "Your favorite submit successfully", context);
-        bloc.add(SubmitfavoritePlaylist(user: currentUserWithToken, list: list, storeID: checkedInStore.Id));
-      },
-    );
+    // return FlatButton(
+    //   color: Colors.purple[200],
+    //   textColor: Colors.white,
+    //   disabledColor: Colors.grey,
+    //   disabledTextColor: Colors.black,
+    //   padding: EdgeInsets.all(8.0),
+    //   splashColor: Colors.blueAccent,
+      
+    //   child: new Text("Submit", style: TextStyle(color: Colors.white),),
+    //   onPressed: (){       
+    //     bloc.add(SubmitfavoritePlaylist(user: currentUserWithToken, list: list, storeID: checkedInStore.Id));
+    //   },
+    // );
+    return Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height*0.08,
+            decoration: new BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.purple[400],
+            ),
+            child: FlatButton.icon(
+              onPressed: (){       
+                bloc.add(SubmitfavoritePlaylist(user: currentUserWithToken, list: list, storeID: checkedInStore.Id));
+              }, 
+              icon: Icon(Icons.backup),
+              label: new Text("Submit", style: TextStyle(color: Colors.white, fontSize: 25),),
+            ),
+            );
   }else{
     return new Text("You can submit after: "+snapshot+" minutes.");
   }
@@ -214,8 +218,6 @@ Widget buildList(List<Playlist> snapshot,HomePageBloc bloc) {
                       fit: BoxFit.fitWidth,
                   ),
                 ),
-                // leading: currentPlay(listCurrentMedia, widget.playlist.Id,
-                //     listMedia[index].Id),
                 trailing: new IconButton(
                   icon: new Icon(Icons.delete_forever, color: Colors.red,),
                   onPressed: (){

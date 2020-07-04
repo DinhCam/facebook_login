@@ -64,6 +64,7 @@ class PlaylistInStoreBloc extends Bloc<PlaylistInStoreEvent, PlaylistInStoreStat
       }else if(rs == "fail"){
         yield SubmitFail();
       }else{
+        yield CreatePagePISState();
         yield SubmitWrongBrand(error: rs);
       }
     }

@@ -94,6 +94,8 @@ class _MediaViewState extends State<MediaView> {
                       MaterialPageRoute(
                           builder: (context) => PlaylistInStoreStateless()),
                     );
+                  } else if (widget.page == 3) {
+                    Navigator.pop(context);
                   }
                 },
               ),
@@ -173,6 +175,8 @@ class _MediaViewState extends State<MediaView> {
             context,
             MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
           );
+        } else if (widget.page == 3) {
+          Navigator.pop(context);
         }
         return true;
       },

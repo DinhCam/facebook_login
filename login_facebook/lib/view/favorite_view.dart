@@ -15,6 +15,7 @@ import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:loginfacebook/repository/time_submit_repository.dart';
 import 'package:loginfacebook/states/playlist_in_store_state.dart';
 import 'package:loginfacebook/states/time_submit_state.dart';
+import 'package:loginfacebook/utility/utils.dart';
 import 'package:loginfacebook/view/playlist_in_store_view.dart';
 
 import 'home_view.dart';
@@ -76,21 +77,22 @@ class _FavoritePageState extends State<FavoritePage> {
               );
             }
             if (state is SubmitWrongBrand) {
-              return showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  content: ListTile(
-                    title: Text("Submit fail"),
-                    subtitle: Text(state.error),
-                  ),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Ok'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-              );
+              // showDialog(
+              //   context: context,
+              //   builder: (context) => AlertDialog(
+              //     content: ListTile(
+              //       title: Text("Submit fail"),
+              //       subtitle: Text(state.error),
+              //     ),
+              //     actions: <Widget>[
+              //       FlatButton(
+              //         child: Text('Ok'),
+              //         onPressed: () => Navigator.of(context).pop(),
+              //       ),
+              //     ],
+              //   ),
+              // );
+              Utils.utilShowDialog("Submit fail", state.error, context);
             }
             if (state is SubmitFail) {}
           },
@@ -116,6 +118,19 @@ class _FavoritePageState extends State<FavoritePage> {
               backgroundColor: Colors.black26),
           body: new Column(
             children: <Widget>[
+              
+              StreamBuilder(
+                stream: _homePageBloc.stream_favotite,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    listFavorite = snapshot.data;
+                    return buildList(snapshot.data,_homePageBloc);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              ),
               StreamBuilder<String>(
                 stream: _timeSubmitBloc.controller_stream,
                 builder: (context, snapshot) {
@@ -128,19 +143,6 @@ class _FavoritePageState extends State<FavoritePage> {
                   return Container();
                 },
               ),
-              StreamBuilder(
-                stream: _homePageBloc.stream_favotite,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    listFavorite = snapshot.data;
-                    return buildList(snapshot.data);
-                  } else if (snapshot.hasError) {
-                    return Text(snapshot.error.toString());
-                  }
-                  return Center(child: CircularProgressIndicator());
-                },
-              ),
-              
             ],
           ),
         ),
@@ -167,21 +169,7 @@ Widget buildStatusSubmit(String snapshot, bloc, list,context) {
         splashColor: Colors.blueAccent,
       child: new Text("Submit", style: TextStyle(color: Colors.white),),
       onPressed: (){
-        showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  content: ListTile(
-                    title: Text("Submit Success"),
-                    subtitle: Text("ssss"),
-                  ),
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('Ok'),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-              );
+        Utils.utilShowDialog("Submit Success", "Your favorite submit successfully", context);
         bloc.add(SubmitfavoritePlaylist(user: currentUserWithToken, list: list, storeID: checkedInStore.Id));
       },
     );
@@ -190,7 +178,7 @@ Widget buildStatusSubmit(String snapshot, bloc, list,context) {
   }
 }
 
-Widget buildList(List<Playlist> snapshot) {
+Widget buildList(List<Playlist> snapshot,HomePageBloc bloc) {
   return Expanded(
     child: ListView.builder(
         scrollDirection: Axis.vertical,
@@ -213,25 +201,26 @@ Widget buildList(List<Playlist> snapshot) {
                         fontSize: 17.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black)),
-                subtitle: new Text(
-                  "asdsad",
-                  style: TextStyle(color: Colors.black),
+                subtitle: new Text("Brand: "+
+                  snapshot[index].BrandName,
+                  style: TextStyle(color: Colors.blueAccent),
                 ),
                 leading: SizedBox(
                   height: 300.0,
                   width: 100.0, // fixed width and height
-                  child: new Image(
-                    image: NetworkImage(snapshot[index].ImageUrl),
-                    height: 500,
-                    width: 150,
-                    fit: BoxFit.fill,
+                  child: FadeInImage.assetNetwork(
+                      placeholder: "alt/loading.gif",
+                      image: snapshot[index].ImageUrl,
+                      fit: BoxFit.fitWidth,
                   ),
                 ),
                 // leading: currentPlay(listCurrentMedia, widget.playlist.Id,
                 //     listMedia[index].Id),
-                trailing: new Text(
-                  snapshot[index].BrandName,
-                  style: TextStyle(color: Colors.blueAccent),
+                trailing: new IconButton(
+                  icon: new Icon(Icons.delete_forever, color: Colors.red,),
+                  onPressed: (){
+                    bloc.add(DeleteFavorite(playlistID: snapshot[index].Id));
+                  },
                 ),
               ));
         }),

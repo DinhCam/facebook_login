@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,9 @@ import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/playlists_state.dart';
 import 'package:loginfacebook/states/stores_state.dart';
+import 'package:loginfacebook/utility/utils.dart';
 import 'package:loginfacebook/view/app_drawer.dart';
+import 'package:loginfacebook/view/playlist_in_store_view.dart';
 import 'package:loginfacebook/view/playlists_sub_view.dart';
 import 'package:loginfacebook/view/search_playlist_widget.dart';
 
@@ -98,42 +99,45 @@ class _BrandsViewState extends State<BrandsView> {
             listener: (BuildContext context, StoresState state) {
               if (state is QRScanSuccess) {
                 Store store = state.store;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    content: ListTile(
-                      title: Text("Check in result"),
-                      subtitle: Text('Welcome to: ' +
-                          store.StoreName +
-                          '\nAddress: ' +
-                          store.Address),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Ok'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
-                );
+                // showDialog(
+                //   context: context,
+                //   builder: (context) => AlertDialog(
+                //     content: ListTile(
+                //       title: Text("Check in result"),
+                //       subtitle: Text('Welcome to: ' +
+                //           store.StoreName +
+                //           '\nAddress: ' +
+                //           store.Address),
+                //     ),
+                //     actions: <Widget>[
+                //       FlatButton(
+                //         child: Text('Ok'),
+                //         onPressed: () => Navigator.of(context).pop(),
+                //       ),
+                //     ],
+                //   ),
+                // );
+                String message='Welcome to: ' +store.StoreName +'\nAddress: ' +store.Address;
+                Utils.utilShowDialog("Check in result", message, context);
               }
               if (state is QRScanFail) {
                 String msg = state.messages;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    content: ListTile(
-                      title: Text("Check in result"),
-                      subtitle: Text(msg),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Ok'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
-                );
+                // showDialog(
+                //   context: context,
+                //   builder: (context) => AlertDialog(
+                //     content: ListTile(
+                //       title: Text("Check in result"),
+                //       subtitle: Text(msg),
+                //     ),
+                //     actions: <Widget>[
+                //       FlatButton(
+                //         child: Text('Ok'),
+                //         onPressed: () => Navigator.of(context).pop(),
+                //       ),
+                //     ],
+                //   ),
+                // );
+                Utils.utilShowDialog("Check in result", msg, context);
               }
             },
             child: null),
@@ -202,40 +206,40 @@ class _BrandsViewState extends State<BrandsView> {
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/icons8-home-page-64.png"),
-              width: MediaQuery.of(context).size.width * 0.1,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
             title: Text("Home",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/icons8-video-playlist-64.png"),
-              width: MediaQuery.of(context).size.width * 0.1,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
             title: Text("Playlists",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
               image: snapshot
-                  ? AssetImage("assets/icons8-favorite-folder-64.png")
+                  ? AssetImage("assets/icons8-play-button-circled-96.png")
                   : AssetImage("assets/qr-code.png"),
-              width: MediaQuery.of(context).size.width * 0.1,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
-            title: Text(snapshot ? "Playlist Store" : "Check in",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+            title: Text(snapshot ? "Current" : "Check in",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
             icon: Image(
               image: AssetImage("assets/userinfo.png"),
-              width: MediaQuery.of(context).size.width * 0.1,
+              width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
             title: Text("Profile",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           )
         ]);
   }
@@ -244,13 +248,19 @@ class _BrandsViewState extends State<BrandsView> {
     setState(() {
       currentIndex = index;
     });
-    if (currentIndex == 0) {
-      _homePageBloc.add(OnPushEvent());
-    } else if (currentIndex == 2) {
-      _storesBloc.add(QRCodeScan());
+    if (currentIndex == 2 && checkedInStore == null) {
+      await _storesBloc.add(QRCodeScan());
+    } else if (currentIndex == 2 && checkedInStore != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
+      );
     } else if (currentIndex == 1) {
       _homePageBloc.add(ViewPlaylist());
+    } else if (currentIndex == 0) {
+      _homePageBloc.add(PageCreate());
     }
+    currentIndex = 0;
   }
 }
 

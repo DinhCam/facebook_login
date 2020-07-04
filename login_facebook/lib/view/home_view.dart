@@ -15,6 +15,7 @@ import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:loginfacebook/states/authentication_state.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/stores_state.dart';
+import 'package:loginfacebook/utility/utils.dart';
 import 'package:loginfacebook/view/app_drawer.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/playlist_in_store_view.dart';
@@ -61,22 +62,28 @@ class _HomeScreenState extends State<HomeScreen> {
     _storesBloc.add(StatusCheckIn());
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: ListTile(
-              title: Text(message['notification']['title']),
-              subtitle: Text(message['notification']['body']),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-        );
+        // showDialog(
+        //   context: context,
+        //   builder: (context) => AlertDialog(
+        //     content: ListTile(
+        //       title: Text(message['notification']['title']),
+        //       subtitle: Text(message['notification']['body']),
+        //     ),
+        //     actions: <Widget>[
+        //       FlatButton(
+        //         color: Colors.blue,
+        //         textColor: Colors.white,
+        //         disabledColor: Colors.grey,
+        //         disabledTextColor: Colors.black,
+        //         padding: EdgeInsets.all(8.0),
+        //         splashColor: Colors.blueAccent,       
+        //         child: Text('Ok'),
+        //         onPressed: () => Navigator.of(context).pop(),
+        //       ),
+        //     ],
+        //   ),
+        // );
+        Utils.utilShowDialog(message['notification']['title'], message['notification']['body'], context);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
@@ -113,42 +120,12 @@ class _HomeScreenState extends State<HomeScreen> {
               listener: (BuildContext context, StoresState state) {
                 if (state is QRScanSuccess) {
                   Store store = state.store;
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      content: ListTile(
-                        title: Text("Check in result"),
-                        subtitle: Text('Welcome to: ' +
-                            store.StoreName +
-                            '\nAddress: ' +
-                            store.Address),
-                      ),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text('Ok'),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                  );
+                  String message='Welcome to: ' +store.StoreName +'\nAddress: ' +store.Address;
+                  Utils.utilShowDialog("Check in result", message, context);
                 }
                 if (state is QRScanFail) {
                   String msg = state.messages;
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      content: ListTile(
-                        title: Text("Check in result"),
-                        subtitle: Text(msg),
-                      ),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text('Ok'),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                  );
+                  Utils.utilShowDialog("Check in result", msg, context);
                 }
               },
               child: null),
@@ -405,13 +382,21 @@ class ListViewHorizontal extends StatelessWidget {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Image(
-                                image:
-                                    NetworkImage(playlistsview[Index].ImageUrl),
-                                width: MediaQuery.of(context).size.width * 0.50,
+                            // Image(
+                            //     image:
+                            //         NetworkImage(playlistsview[Index].ImageUrl),
+                            //     width: MediaQuery.of(context).size.width * 0.50,
+                            //     height:
+                            //         MediaQuery.of(context).size.width * 0.29,
+                            //     fit: BoxFit.cover),
+                            FadeInImage.assetNetwork(
+                              placeholder: "alt/loading.gif",
+                              image: playlistsview[Index].ImageUrl,
+                              width: MediaQuery.of(context).size.width * 0.50,
                                 height:
                                     MediaQuery.of(context).size.width * 0.29,
-                                fit: BoxFit.cover),
+                                fit: BoxFit.cover
+                            ),
                             Text(playlistsview[Index].PlaylistName,
                                 style: TextStyle(
                                   color: Colors.white,
@@ -506,11 +491,19 @@ class ListViewVertical extends StatelessWidget {
                       },
                       borderSide: BorderSide(color: Colors.black),
                       child: Row(children: <Widget>[
-                        Image(
-                            image: NetworkImage(playlistsview[Index].ImageUrl),
-                            width: 60.0,
-                            height: 60.0,
-                            fit: BoxFit.fitHeight),
+                        // Image(
+                        //     image: NetworkImage(playlistsview[Index].ImageUrl),
+                        //     width: 60.0,
+                        //     height: 60.0,
+                        //     fit: BoxFit.fitHeight),
+                        FadeInImage.assetNetwork(
+                          placeholder: "alt/loading.gif",
+                          image: playlistsview[Index].ImageUrl,
+                          width: MediaQuery.of(context).size.width * 0.10,
+                            height:
+                                MediaQuery.of(context).size.width * 0.10,
+                            fit: BoxFit.cover
+                        ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(

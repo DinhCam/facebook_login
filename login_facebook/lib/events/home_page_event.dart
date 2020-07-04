@@ -32,3 +32,10 @@ class OnPushEvent extends HomepageEvent {
   @override
   String toString() => 'ViewPlaylist';
 }
+
+class DeleteFavorite extends HomepageEvent {
+  String playlistID;
+  DeleteFavorite({@required this.playlistID}) : assert(playlistID!=null);
+  @override
+  String toString() => 'DeleteFavorite';
+}

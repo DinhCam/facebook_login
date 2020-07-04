@@ -50,7 +50,7 @@ class PlaylistInStoreBloc extends Bloc<PlaylistInStoreEvent, PlaylistInStoreStat
   @override
   Stream<PlaylistInStoreState> mapEventToState(PlaylistInStoreEvent event) async*{
     if(event is PageCreatePIS){
-      await getCurrentMedia(event.store.Id);
+      // await getCurrentMedia(event.store.Id);
       await getPlaylistInStore(event.store.Id, 2, true, 0, 10);  
       yield CreatePagePISState();
     }else if(event is PageReloadPIS){

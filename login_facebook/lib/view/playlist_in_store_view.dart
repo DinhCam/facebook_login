@@ -13,6 +13,7 @@ import 'package:loginfacebook/repository/playlist_in_store_repository.dart';
 
 import 'home_view.dart';
 import 'media_view.dart';
+import 'favorite_view.dart';
 
 class PlaylistInStoreStateless extends StatelessWidget {
   @override
@@ -40,6 +41,7 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   List<PlaylistInStore> listPIS;
   List<CurrentMedia> listCurrentMedia;
   Timer timerCallApi;
+  int currentIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -61,7 +63,8 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return new WillPopScope(
+      child: new Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: new AppBar(
         title: new Text("Playlist in store"),
@@ -127,25 +130,58 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
         ),
       ]),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        onTap: onTabped,
+        currentIndex: currentIndex,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
+            icon: Image(
+              image:  AssetImage("assets/icons8-video-playlist-96.png"),
+              width: MediaQuery.of(context).size.width * 0.15,
+              fit: BoxFit.cover,
+            ),
+            title: Text('Favorite Playlist',style: TextStyle(color: Colors.green, fontSize: 16),),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            title: Text('Business'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            title: Text('School'),
+            icon: Image(
+              image:  AssetImage("assets/qr-code.png"),
+              width: MediaQuery.of(context).size.width * 0.15,
+              fit: BoxFit.cover,
+            ),
+              
+            title: Text('Check out', style: TextStyle(color: Colors.green, fontSize: 16),),
           ),
         ],
         // currentIndex: _selectedIndex,
         // selectedItemColor: Colors.amber[800],
         // onTap: _onItemTapped,
       ),
+    ),
+    onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        return true;
+      },
     );
+  }
+  void onTabped(int index) async{
+    setState(() {
+      currentIndex = index;
+    });
+    if(currentIndex ==0){
+       Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => FavoriteView()),
+            );
+
+    }else if( currentIndex ==1){
+      checkedInStore = null;
+       Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );
+    }
   }
 
   Widget buildList(snapshot) {

@@ -106,7 +106,8 @@ class PlaylistsBloc extends Bloc<PlaylistsEvent, PlaylistState> {
             .collection(uid)
             .document(uid);
         await rs.setData({'topic': channel});
-        _fcm.subscribeToTopic(channel);
+        String topic= channel.replaceAll(' ', '');
+        _fcm.subscribeToTopic(topic);
         yield LoadFinishState();
         yield ChangeSuccess(isSubcribe: !isSubcribe,brandName: channel,context: context);
       } catch (e) {
@@ -122,7 +123,8 @@ class PlaylistsBloc extends Bloc<PlaylistsEvent, PlaylistState> {
               ds.reference.delete()
             }
           });
-          _fcm.unsubscribeFromTopic(channel);
+          String topic= channel.replaceAll(' ', '');
+          _fcm.unsubscribeFromTopic(topic);
         yield LoadFinishState();
         yield ChangeSuccess(isSubcribe: !isSubcribe,brandName: channel,context: context);
       } catch (e) {

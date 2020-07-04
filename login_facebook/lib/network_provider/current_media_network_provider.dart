@@ -15,7 +15,7 @@ class CurrentMediaNetWorkProvider {
     String url = baseUrl + storeId ;
     final http.Response response = await http.get(url, headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token
+      // HttpHeaders.authorizationHeader: 'Bearer ' + currentUserWithToken.Token
     });
     if (response.statusCode == 200) {
       List<dynamic> values = new List<dynamic>();

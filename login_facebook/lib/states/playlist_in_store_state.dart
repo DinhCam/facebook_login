@@ -16,4 +16,16 @@ class PageReloadPISState extends PlaylistInStoreState {
 
 }
 
+class SubmitSuccess extends PlaylistInStoreState{
+
+}
+
+class SubmitFail extends PlaylistInStoreState{
+
+}
+class SubmitWrongBrand extends PlaylistInStoreState{
+  String error;
+  SubmitWrongBrand({Key key, @required this.error});
+}
+
 

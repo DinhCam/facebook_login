@@ -4,11 +4,11 @@ import 'package:loginfacebook/model/category_playlist.dart';
 
 class PlaylistInStore{
   String _id;
-  double _priotity;
+  int _priotity;
   int _numberOfPlays;
   String _storeId;
   String _playlistId;
-  int _orderPlay;
+  double _orderPlay;
   String _playlistName;
   String _imageUrl;
   List<CategoryPlaylist> _listCategoryPlaylists;
@@ -16,9 +16,9 @@ class PlaylistInStore{
 
  set id(String value) => _id = value;
 
- double get priotity => _priotity;
+ int get priotity => _priotity;
 
- set priotity(double value) => _priotity = value;
+ set priotity(int value) => _priotity = value;
 
  int get numberOfPlays => _numberOfPlays;
 
@@ -32,9 +32,9 @@ class PlaylistInStore{
 
  set playlistId(String value) => _playlistId = value;
 
- int get orderPlay => _orderPlay;
+ double get orderPlay => _orderPlay;
 
- set orderPlay(int value) => _orderPlay = value;
+ set orderPlay(double value) => _orderPlay = value;
 
  String get playlistName => _playlistName;
 
@@ -49,14 +49,15 @@ class PlaylistInStore{
  set listCategoryPlaylists(List value) => _listCategoryPlaylists = value;
  
  
+ 
  PlaylistInStore(
    {
       String id,
-      double priotity,
+      int priotity,
       int numberOfPlays,
       String storeId,
       String playlistId,
-      int orderPlay,
+      double orderPlay,
       String playlistName,
       String imageUrl,
       List<CategoryPlaylist> listCategoryPlaylists,

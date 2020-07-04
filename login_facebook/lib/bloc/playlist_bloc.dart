@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:loginfacebook/network_provider/authentication_network_provider.dart';
+import 'package:loginfacebook/repository/favorite_playlist_repository.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
@@ -11,6 +13,7 @@ import 'package:wifi_configuration/wifi_configuration.dart';
 
 class HomePageBloc extends Bloc<HomepageEvent, HomePageState> {
   PlaylistRepository _playlistRepository = PlaylistRepository();
+  FavoritePlaylistRepository _favoritePlaylistRepository = new FavoritePlaylistRepository();
   final _favoritePlaylistController = StreamController<List<Playlist>>();
   StreamSink<List<Playlist>> get favotite_sink =>
       _favoritePlaylistController.sink;
@@ -76,6 +79,16 @@ class HomePageBloc extends Bloc<HomepageEvent, HomePageState> {
       yield ViewPlaylists();
     } else if (event is OnPushEvent) {
       yield OnPushState();
+    } else if (event is DeleteFavorite){
+      var rs=await _favoritePlaylistRepository.deleteFavoritePlaylist(event.playlistID, currentUserWithToken.Id);
+      if(rs){
+        getUserFavoritesPlaylist();
+        yield DeleteSuccess();
+      }else{
+        yield Deletefail();
+      }
+
+
     }
   }
 }

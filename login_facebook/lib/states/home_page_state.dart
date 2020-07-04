@@ -16,4 +16,9 @@ class ViewPlaylists extends HomePageState {
 class OnPushState extends HomePageState {
 }
 
+class DeleteSuccess extends HomePageState {
+}
+class Deletefail extends HomePageState {
+}
+
 

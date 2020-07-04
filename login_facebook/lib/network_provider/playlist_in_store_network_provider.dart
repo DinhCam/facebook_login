@@ -57,7 +57,9 @@ class PlaylistInStoreNetWorkProvider {
         }else if(response.statusCode == 400){
           return "fail";
         } else{
-          return response.body.toString();
+          var values = json.decode(response.body);
+          String error = values['content'];
+          return error;
         }
   }
   getString(List<Playlist> list) async{

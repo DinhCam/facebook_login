@@ -267,7 +267,7 @@ class PlaylistsListViewVertical extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => MediaView(
-                                      playlist: playlistsview[Index], page: 1,)),
+                                      playlist: playlistsview[Index], page: 3,)),
                             );
                           },
                           child: Row(

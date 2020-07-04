@@ -83,9 +83,20 @@ class _MediaViewState extends State<MediaView> {
               leading: new IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.pop(
-                    context,
-                  );
+                  if (widget.page == 1) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  } else if (widget.page == 2) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PlaylistInStoreStateless()),
+                    );
+                  } else if (widget.page == 3) {
+                    Navigator.pop(context);
+                  }
                 },
               ),
               backgroundColor: Colors.black26),
@@ -103,9 +114,11 @@ class _MediaViewState extends State<MediaView> {
                     alignment: Alignment.topCenter,
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.25,
-                    decoration: new BoxDecoration(
-                      image: new DecorationImage(
-                        image: NetworkImage(widget.playlist.ImageUrl),
+                    child: new Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: FadeInImage.assetNetwork(
+                        placeholder: "alt/loading.gif",
+                        image: widget.playlist.ImageUrl,
                         fit: BoxFit.fitWidth,
                       ),
                     ),
@@ -152,10 +165,19 @@ class _MediaViewState extends State<MediaView> {
             ),
           ])),
       onWillPop: () async {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        if (widget.page == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else if (widget.page == 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
+          );
+        } else if (widget.page == 3) {
+          Navigator.pop(context);
+        }
         return true;
       },
     );
@@ -237,13 +259,13 @@ class _MediaViewState extends State<MediaView> {
       if (playlisID == currentMedia[0].playlistId &&
           mediaID == currentMedia[0].mediaId) {
         return new Icon(
-          Icons.play_arrow,
-          color: Colors.red,
+          Icons.play_circle_outline,
+          color: Colors.green,
           size: 40,
         );
       } else {
         return new Icon(
-          Icons.play_arrow,
+          Icons.play_circle_outline,
           color: Colors.white,
           size: 40,
         );

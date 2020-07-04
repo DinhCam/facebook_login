@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:loginfacebook/events/playlist_in_store_event.dart';
+import 'package:loginfacebook/model/account.dart';
 import 'package:loginfacebook/model/current_media.dart';
+import 'package:loginfacebook/model/playlist.dart';
 import 'package:loginfacebook/model/playlist_in_store.dart';
 import 'package:loginfacebook/repository/current_media_repository.dart';
 import 'package:loginfacebook/repository/playlist_in_store_repository.dart';
@@ -36,6 +38,10 @@ class PlaylistInStoreBloc extends Bloc<PlaylistInStoreEvent, PlaylistInStoreStat
     final rs= await _currentMediaRepo.getCurrentMediabyStoreId(storeId);
     currentMedia_sink.add(rs);
   }
+  Future<String> putFavoritePlaylist(UserAuthenticated user, List<Playlist> list, String storeID) async{
+    final rs= await _playlistInStoreRepo.putPlaylistInStoreByStoreId(user, list, storeID);
+    return rs;
+  }
 
   @override
   // TODO: implement initialState
@@ -45,12 +51,21 @@ class PlaylistInStoreBloc extends Bloc<PlaylistInStoreEvent, PlaylistInStoreStat
   Stream<PlaylistInStoreState> mapEventToState(PlaylistInStoreEvent event) async*{
     if(event is PageCreatePIS){
       await getCurrentMedia(event.store.Id);
-      await getPlaylistInStore(event.store.Id, 1, true, 0, 10);  
+      await getPlaylistInStore(event.store.Id, 2, true, 0, 10);  
       yield CreatePagePISState();
     }else if(event is PageReloadPIS){
       await getCurrentMedia(event.store.Id);
-      await getPlaylistInStore(event.store.Id, 1, true, 0, 10);  
+      await getPlaylistInStore(event.store.Id, 2, true, 0, 10);  
       yield PageReloadPISState();
+    }else if(event is SubmitfavoritePlaylist){
+      var rs = await putFavoritePlaylist(event.user, event.list, event.storeID);
+      if(rs == "Success"){
+        yield SubmitSuccess();
+      }else if(rs == "fail"){
+        yield SubmitFail();
+      }else{
+        yield SubmitWrongBrand(error: rs);
+      }
     }
   }
   

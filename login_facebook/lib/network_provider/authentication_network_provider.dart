@@ -1,3 +1,4 @@
+import 'package:loginfacebook/bloc/stores_bloc.dart';
 import 'package:loginfacebook/model/account.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -152,6 +153,8 @@ print(e);
     await _auth.signOut();
     await _facebooklogin.logOut();
     await googleSignIn.signOut();
+    checkedInStore=null;
+    currentUserWithToken=null;
   }
 
 Future<bool> checkLogin() async {

@@ -152,7 +152,7 @@ class _MediaViewState extends State<MediaView> {
             ),
           ])),
       onWillPop: () async {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );

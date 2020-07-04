@@ -335,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: MediaQuery.of(context).size.width * 0.10,
               fit: BoxFit.cover,
             ),
-            title: Text(snapshot ? "Current Store" : "Check in",
+            title: Text(snapshot ? "Current" : "Check in",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
           BottomNavigationBarItem(
@@ -391,7 +391,7 @@ class ListViewHorizontal extends StatelessWidget {
                   child: new OutlineButton(
                       splashColor: Colors.grey,
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => MediaView(
@@ -496,7 +496,7 @@ class ListViewVertical extends StatelessWidget {
                   child: new OutlineButton(
                       splashColor: Colors.grey,
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => MediaView(

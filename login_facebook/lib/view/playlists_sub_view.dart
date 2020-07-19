@@ -17,6 +17,7 @@ import 'package:loginfacebook/repository/stores_repository.dart';
 import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/playlists_state.dart';
 import 'package:loginfacebook/states/stores_state.dart';
+import 'package:loginfacebook/utility/utils.dart';
 import 'package:loginfacebook/view/home_view.dart';
 import 'package:loginfacebook/view/media_view.dart';
 import 'package:loginfacebook/view/search_playlist_widget.dart';
@@ -83,42 +84,12 @@ class _PlaylistsViewState extends State<PlaylistsView> {
             listener: (BuildContext context, StoresState state) {
               if (state is QRScanSuccess) {
                 Store store = state.store;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    content: ListTile(
-                      title: Text("Check in result"),
-                      subtitle: Text('Welcome to: ' +
-                          store.StoreName +
-                          '\nAddress: ' +
-                          store.Address),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Ok'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
-                );
+                String message='Welcome to: ' +store.StoreName +'\nAddress: ' +store.Address;
+                  Utils.utilShowDialog("Check in result", message, context);
               }
               if (state is QRScanFail) {
                 String msg = state.messages;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    content: ListTile(
-                      title: Text("Check in result"),
-                      subtitle: Text(msg),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text('Ok'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ],
-                  ),
-                );
+                Utils.utilShowDialog("Check in result", msg, context);
               }
             },
             child: null),
@@ -275,14 +246,22 @@ class PlaylistsListViewVertical extends StatelessWidget {
                               children: <Widget>[
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(5.0),
-                                  child: Image(
-                                    image: NetworkImage(
-                                        playlistsview[Index].ImageUrl),
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
-                                    height: MediaQuery.of(context).size.width *
-                                        0.30,
-                                    fit: BoxFit.fill,
+                                   child: //Image(
+                                  //   image: NetworkImage(
+                                  //       playlistsview[Index].ImageUrl),
+                                  //   width:
+                                  //       MediaQuery.of(context).size.width * 0.3,
+                                  //   height: MediaQuery.of(context).size.width *
+                                  //       0.30,
+                                  //   fit: BoxFit.fill,
+                                  // ),
+                                  FadeInImage.assetNetwork(
+                                    placeholder: "alt/loading.gif",
+                                    image: playlistsview[Index].ImageUrl,
+                                    width: MediaQuery.of(context).size.width * 0.3,
+                                    height:
+                                          MediaQuery.of(context).size.width * 0.3,
+                                    fit: BoxFit.fill
                                   ),
                                 ),
                                 Container(

@@ -58,9 +58,12 @@ class _MediaViewState extends State<MediaView> {
     super.initState();
     _mediaBloc = MediaBloc(mediaRepository: MediaRepository());
     _mediaBloc.add(PageCreateMedia(playlist: widget.playlist));
-    if (widget.page != 1) {
+    if(checkedInStore!=null){
+      if (widget.page != 1) {
       setUpTimedFetch();
     }
+    }
+    
   }
 
   @override
@@ -279,10 +282,16 @@ class _MediaViewState extends State<MediaView> {
   }
 
   setUpTimedFetch() async {
-    int timeToCall = 10000;
+    int timeToCall = 1000000;
     await getCurrentMedia();
     if (listCurrentMedia != null) {
-      timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+      if(!listCurrentMedia.isEmpty){
+        var now=new DateTime.now();
+        var checkTime=listCurrentMedia[0].timeEnd.difference(now);
+        if(checkTime.inMilliseconds>0){
+          timeToCall=checkTime.inMilliseconds;
+        }
+      }      
     }
     print(timeToCall);
     timerCallApi =

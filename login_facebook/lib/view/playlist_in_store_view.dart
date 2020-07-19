@@ -260,11 +260,15 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   }
 
   setUpTimedFetch() async {
-    int timeToCall = 10000;
+    int timeToCall = 1000000;
     await getCurrentMedia();
     if (listCurrentMedia != null) {
       if(!listCurrentMedia.isEmpty){
-        timeToCall = listCurrentMedia[0].timeToPlay.inMilliseconds;
+        var now=new DateTime.now();
+        var checkTime=listCurrentMedia[0].timeEnd.difference(now);
+        if(checkTime.inMilliseconds>0){
+          timeToCall=checkTime.inMilliseconds;
+        }
       }      
     }
     print(timeToCall);

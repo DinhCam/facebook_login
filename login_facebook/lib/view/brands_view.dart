@@ -91,6 +91,8 @@ class _BrandsViewState extends State<BrandsView> {
             listener: (BuildContext context, HomePageState state) {
               if (state is OnPushState) {
                 Navigator.pop(context);
+              }else if (state is CreateState){
+                Navigator.pop(context);
               }
             },
             child: null),

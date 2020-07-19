@@ -43,6 +43,7 @@ class AccountNetworkProvider{
     // If the server did return a 201 CREATED response,
     // then parse the JSON.
     UserAuthenticated rs =  UserAuthenticated.fromJson(json.decode(response.body));
+    currentUserWithToken =rs;
     return rs;
   } else {
     throw Exception('Failed to load user');
@@ -62,6 +63,8 @@ class AccountNetworkProvider{
     // If the server did return a 201 CREATED response,
     // then parse the JSON.
     UserAuthenticated rs =  UserAuthenticated.fromJson(json.decode(response.body));
+    currentUserWithToken =rs;
+    prefs.setString("JwtToken", currentUserWithToken.Token);
     return rs;
   } else {
     throw Exception('Failed to load user');
@@ -95,16 +98,11 @@ Future<UserAuthenticated> signInWithGoogle() async {
     final tokenId =await user.getIdToken();
     final token = tokenId.token ; 
     currentUserWithToken = await accountNetworkProvider.fetchUser(tokenId.token, await _fcm.getToken());
-    print("khanh abc");
-    print(currentUserWithToken.Id);
-    print(currentUserWithToken.FullName);
-    print(currentUserWithToken.PhoneNumber);
     prefs.setString("JwtToken", currentUserWithToken.Token);
     if (name.contains(" ")) {
       name = name.substring(0, name.indexOf(" "));
     }
     final idtoken =await user.getIdToken();      
-    print(token);
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
     final FirebaseUser currentUser = await _auth.currentUser();

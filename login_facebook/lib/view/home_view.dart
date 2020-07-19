@@ -61,28 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _homePageBloc.add(PageCreate());
     _storesBloc.add(StatusCheckIn());
     _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        // showDialog(
-        //   context: context,
-        //   builder: (context) => AlertDialog(
-        //     content: ListTile(
-        //       title: Text(message['notification']['title']),
-        //       subtitle: Text(message['notification']['body']),
-        //     ),
-        //     actions: <Widget>[
-        //       FlatButton(
-        //         color: Colors.blue,
-        //         textColor: Colors.white,
-        //         disabledColor: Colors.grey,
-        //         disabledTextColor: Colors.black,
-        //         padding: EdgeInsets.all(8.0),
-        //         splashColor: Colors.blueAccent,       
-        //         child: Text('Ok'),
-        //         onPressed: () => Navigator.of(context).pop(),
-        //       ),
-        //     ],
-        //   ),
-        // );
+      onMessage: (Map<String, dynamic> message) async {     
         Utils.utilShowDialog(message['notification']['title'], message['notification']['body'], context);
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -354,6 +333,9 @@ class ListViewHorizontal extends StatelessWidget {
   Widget build(BuildContext context) {
     HomePageBloc homePageBloc =
         HomePageBloc(playlistRepository: PlaylistRepository());
+    if(playlistsview.isEmpty){
+      return Container();
+    }
     return Container(
         height: MediaQuery.of(context).size.width * 0.4,
         width: MediaQuery.of(context).size.width,

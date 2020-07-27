@@ -31,7 +31,7 @@ dependencies:
   firebase_core: ^0.4.0+9
   firebase_auth: ^0.14.0+5
   flutter_facebook_login: ^3.0.0
-  google_sign_in: ^4.4.4
+  google_sign_in: ^4.5.1
   flappy_search_bar: 1.4.1
   flutter_signin_button: ^1.0.0
   http: ^0.12.1
@@ -49,6 +49,7 @@ dependencies:
   wifi_configuration: ^1.2.1
   wifi: ^0.1.5
   cloud_firestore: ^0.13.6
+  google_sign_in_web: ^0.9.1+1
 
   
   

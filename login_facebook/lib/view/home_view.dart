@@ -377,7 +377,7 @@ class ListViewHorizontal extends StatelessWidget {
                               width: MediaQuery.of(context).size.width * 0.50,
                                 height:
                                     MediaQuery.of(context).size.width * 0.29,
-                                fit: BoxFit.cover
+                                fit: BoxFit.cover,                                
                             ),
                             Text(playlistsview[Index].PlaylistName,
                                 style: TextStyle(

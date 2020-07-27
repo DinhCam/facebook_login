@@ -261,7 +261,7 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
 
   setUpTimedFetch() async {
     int timeToCall = 1000000;
-    await getCurrentMedia();
+    var rs=await getCurrentMedia();
     if (listCurrentMedia != null) {
       if(!listCurrentMedia.isEmpty){
         var now=new DateTime.now();
@@ -283,9 +283,10 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
     });
   }
 
-  getCurrentMedia() async {
+  Future<String> getCurrentMedia() async {
     CurrentMediaRepository repo = CurrentMediaRepository();
     final rs = await repo.getCurrentMediabyStoreId(checkedInStore.Id);
     listCurrentMedia = rs;
+    return "success";
   }
 }

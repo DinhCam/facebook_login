@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:loginfacebook/model/playlist.dart';
 
 @immutable
 abstract class HomePageState extends Equatable {
@@ -20,5 +21,10 @@ class DeleteSuccess extends HomePageState {
 }
 class Deletefail extends HomePageState {
 }
-
+class LoadFavoritePlaylistSuccess extends HomePageState {
+  List<Playlist> list;
+  LoadFavoritePlaylistSuccess({Key key, @required this.list});
+}
+class Tmp extends HomePageState {
+}
 

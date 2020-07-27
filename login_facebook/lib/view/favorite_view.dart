@@ -13,6 +13,7 @@ import 'package:loginfacebook/repository/current_media_repository.dart';
 import 'package:loginfacebook/repository/playlist_in_store_repository.dart';
 import 'package:loginfacebook/repository/playlist_repository.dart';
 import 'package:loginfacebook/repository/time_submit_repository.dart';
+import 'package:loginfacebook/states/home_page_state.dart';
 import 'package:loginfacebook/states/playlist_in_store_state.dart';
 import 'package:loginfacebook/states/time_submit_state.dart';
 import 'package:loginfacebook/utility/utils.dart';
@@ -87,6 +88,19 @@ class _FavoritePageState extends State<FavoritePage> {
           },
           child: new Container(),
         ),
+        BlocListener(
+          bloc: _homePageBloc,
+          listener:(BuildContext context, HomePageState state) {
+            if (state is LoadFavoritePlaylistSuccess) {
+              setState(() {
+                listFavorite = state.list;
+              });
+              
+            }
+          },
+          child: new Container()
+        ),
+        
       ],
       child: WillPopScope(
         child: Scaffold(
@@ -111,8 +125,8 @@ class _FavoritePageState extends State<FavoritePage> {
               StreamBuilder(
                 stream: _homePageBloc.stream_favotite,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    listFavorite = snapshot.data;
+                  if (snapshot.hasData) {                   
+                    listFavorite = snapshot.data;                   
                     return buildList(snapshot.data,_homePageBloc);
                   } else if (snapshot.hasError) {
                     return Text(snapshot.error.toString());
@@ -124,8 +138,13 @@ class _FavoritePageState extends State<FavoritePage> {
                 stream: _timeSubmitBloc.controller_stream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return buildStatusSubmit(
+                    if(listFavorite == null){
+                      return Container();
+                    }else{
+                      return buildStatusSubmit(
                         snapshot.data, _playlistInStoreBloc, listFavorite,context);
+                    }
+                    
                   } else if (snapshot.hasError) {
                     return Container();
                   }
@@ -148,20 +167,7 @@ class _FavoritePageState extends State<FavoritePage> {
 }
 
 Widget buildStatusSubmit(String snapshot, bloc, list,context) {
-  if (snapshot == "CanSubmit") {
-    // return FlatButton(
-    //   color: Colors.purple[200],
-    //   textColor: Colors.white,
-    //   disabledColor: Colors.grey,
-    //   disabledTextColor: Colors.black,
-    //   padding: EdgeInsets.all(8.0),
-    //   splashColor: Colors.blueAccent,
-      
-    //   child: new Text("Submit", style: TextStyle(color: Colors.white),),
-    //   onPressed: (){       
-    //     bloc.add(SubmitfavoritePlaylist(user: currentUserWithToken, list: list, storeID: checkedInStore.Id));
-    //   },
-    // );
+  if (snapshot == "CanSubmit") {    
     return Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height*0.08,

@@ -39,9 +39,11 @@ class HomePageBloc extends Bloc<HomepageEvent, HomePageState> {
     top3_sink.add(tmp);
   }
 
-  void getUserFavoritesPlaylist() async {
+  Future<List<Playlist>> getUserFavoritesPlaylist() async{
     final tmp = await _playlistRepository.getUserFavoritesPlaylist();
+  
     favotite_sink.add(tmp);
+    return tmp;
   }
 
   void getPlaylistWithPage(int page) async {
@@ -69,8 +71,10 @@ class HomePageBloc extends Bloc<HomepageEvent, HomePageState> {
       await getTop3Playlist();
       yield LoadFinishState();
     } else if (event is GetFavorite) {
-      await getUserFavoritesPlaylist();
-      yield LoadFinishState();
+      var rs=await getUserFavoritesPlaylist();
+      yield Tmp();
+      yield LoadFavoritePlaylistSuccess(list: rs);
+      
     } else if (event is GetPlaylistSuggets) {
       await getPlaylistWithPage(0);
       yield LoadFinishState();

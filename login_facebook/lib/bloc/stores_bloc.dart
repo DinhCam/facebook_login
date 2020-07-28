@@ -10,6 +10,7 @@ import 'package:loginfacebook/utility/qr_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Store checkedInStore = null;
+
 class StoresBloc extends Bloc<StoresEvent, StoresState> {
   StoresRepository _storesRepository = StoresRepository();
 
@@ -29,12 +30,16 @@ class StoresBloc extends Bloc<StoresEvent, StoresState> {
   // TODO: implement initialState
   StoresState get initialState => Uninitialized();
 
-  void getStatusForCheckin(){
-    if(checkedInStore!=null){
-      statusCheckIn_sink.add(true);
-    }else{
+  void getStatusForCheckin() {
+    if (checkedInStore != null) {
+      if (checkedInStore.Id != null) {
+        statusCheckIn_sink.add(true);
+      } else {
+        statusCheckIn_sink.add(false);
+        checkedInStore = null;
+      }
+    } else
       statusCheckIn_sink.add(false);
-    }
   }
 
   @override
@@ -47,12 +52,10 @@ class StoresBloc extends Bloc<StoresEvent, StoresState> {
       if (id == '-1') {
         yield QRScanCancel(null);
       } else {
-
         final scanResult = await _storesRepository.getMediaByplaylistId(id);
         if (scanResult != null) {
-
-          checkedInStore =scanResult;
-        getStatusForCheckin();
+          checkedInStore = scanResult;
+          getStatusForCheckin();
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("storeId", scanResult.Id);
@@ -63,7 +66,7 @@ class StoresBloc extends Bloc<StoresEvent, StoresState> {
         }
       }
     }
-    if(event is StatusCheckIn){
+    if (event is StatusCheckIn) {
       await getStatusForCheckin();
       yield CheckIn(null);
     }

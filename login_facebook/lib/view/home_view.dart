@@ -61,8 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _homePageBloc.add(PageCreate());
     _storesBloc.add(StatusCheckIn());
     _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {     
-        Utils.utilShowDialog(message['notification']['title'], message['notification']['body'], context);
+      onMessage: (Map<String, dynamic> message) async {
+        Utils.utilShowDialog(message['notification']['title'],
+            message['notification']['body'], context);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
@@ -99,7 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
               listener: (BuildContext context, StoresState state) {
                 if (state is QRScanSuccess) {
                   Store store = state.store;
-                  String message='Welcome to: ' +store.StoreName +'\nAddress: ' +store.Address;
+                  String message = 'Welcome to: ' +
+                      store.StoreName +
+                      '\nAddress: ' +
+                      store.Address;
                   Utils.utilShowDialog("Check in result", message, context);
                 }
                 if (state is QRScanFail) {
@@ -144,21 +148,18 @@ class _HomeScreenState extends State<HomeScreen> {
             body: new SafeArea(
                 child: new ListView(children: <Widget>[
               new Container(
-                 // padding: const EdgeInsets.only(top: 10.0),
+                  // padding: const EdgeInsets.only(top: 10.0),
                   margin: const EdgeInsets.only(left: 0, right: 0, top: 10),
                   child: Column(
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
-                            color: Color.fromARGB(100, 187, 171, 201),
-                                
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: Color.fromARGB(100, 187, 171, 201),
                         ),
                         padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height * 0.05,
-                        
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "Your favorite",
@@ -187,15 +188,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
-                            color: Color.fromARGB(100, 187, 171, 201),
-                                
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: Color.fromARGB(100, 187, 171, 201),
                         ),
                         padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height * 0.05,
-                        
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "Top 3 Playlist",
@@ -223,16 +221,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(children: <Widget>[
                     new Container(
                       decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
-                            color: Color.fromARGB(100, 187, 171, 201),
-                                
-                        ),
-                        padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.05,
-                        
-                        alignment: Alignment.centerLeft,
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        color: Color.fromARGB(100, 187, 171, 201),
+                      ),
+                      padding: EdgeInsets.fromLTRB(2, 2, 2, 2),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.05,
+                      alignment: Alignment.centerLeft,
                       child: Text(
                         "Playlist",
                         style: TextStyle(
@@ -313,10 +308,14 @@ class _HomeScreenState extends State<HomeScreen> {
     if (currentIndex == 2 && checkedInStore == null) {
       await _storesBloc.add(QRCodeScan());
     } else if (currentIndex == 2 && checkedInStore != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
-      );
+      if (checkedInStore.Id != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PlaylistInStoreStateless()),
+        );
+      } else {
+        await _storesBloc.add(QRCodeScan());
+      }
     } else if (currentIndex == 1) {
       _homePageBloc.add(ViewPlaylist());
     } else if (currentIndex == 0) {
@@ -333,7 +332,7 @@ class ListViewHorizontal extends StatelessWidget {
   Widget build(BuildContext context) {
     HomePageBloc homePageBloc =
         HomePageBloc(playlistRepository: PlaylistRepository());
-    if(playlistsview.isEmpty){
+    if (playlistsview.isEmpty) {
       return Container();
     }
     return Container(
@@ -375,9 +374,8 @@ class ListViewHorizontal extends StatelessWidget {
                               placeholder: "alt/loading.gif",
                               image: playlistsview[Index].ImageUrl,
                               width: MediaQuery.of(context).size.width * 0.50,
-                                height:
-                                    MediaQuery.of(context).size.width * 0.29,
-                                fit: BoxFit.cover,                                
+                              height: MediaQuery.of(context).size.width * 0.29,
+                              fit: BoxFit.cover,
                             ),
                             Text(playlistsview[Index].PlaylistName,
                                 style: TextStyle(
@@ -467,8 +465,7 @@ class ListViewVertical extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => MediaView(
-                                  playlist: playlistsview[Index],                                 
-                                  page: 1)),
+                                  playlist: playlistsview[Index], page: 1)),
                         );
                       },
                       borderSide: BorderSide(color: Colors.black),
@@ -479,13 +476,11 @@ class ListViewVertical extends StatelessWidget {
                         //     height: 60.0,
                         //     fit: BoxFit.fitHeight),
                         FadeInImage.assetNetwork(
-                          placeholder: "alt/loading.gif",
-                          image: playlistsview[Index].ImageUrl,
-                          width: MediaQuery.of(context).size.width * 0.10,
-                            height:
-                                MediaQuery.of(context).size.width * 0.10,
-                            fit: BoxFit.cover
-                        ),
+                            placeholder: "alt/loading.gif",
+                            image: playlistsview[Index].ImageUrl,
+                            width: MediaQuery.of(context).size.width * 0.10,
+                            height: MediaQuery.of(context).size.width * 0.10,
+                            fit: BoxFit.cover),
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(

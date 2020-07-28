@@ -93,14 +93,14 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
                   alignment: Alignment.topCenter,
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.25,
-                  child:new Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: FadeInImage.assetNetwork(                      
+                  child: new Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: FadeInImage.assetNetwork(
                       placeholder: "alt/loading.gif",
                       image: checkedInStore.ImageURL,
                       fit: BoxFit.fitWidth,
                     ),
-                    ) ,
+                  ),
                 ),
                 new Container(
                   decoration: new BoxDecoration(
@@ -184,7 +184,7 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
         MaterialPageRoute(builder: (context) => FavoriteView()),
       );
     } else if (currentIndex == 1) {
-      checkedInStore = null;
+      checkedInStore.Id = null;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
@@ -244,32 +244,36 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   }
 
   Icon currentPlay(PlaylistInStore list) {
-    if (list.playlistId == listCurrentMedia[0].playlistId) {
-      return new Icon(
-        Icons.play_circle_outline,
-        color: Colors.green,
-        size: 40,
-      );
-    } else {
-      return new Icon(
-        Icons.play_circle_outline,
-        color: Colors.white,
-        size: 40,
-      );
+    if (listCurrentMedia != null) {
+      if (listCurrentMedia.length > 0) {
+        if (list.playlistId == listCurrentMedia[0].playlistId) {
+          return new Icon(
+            Icons.play_circle_outline,
+            color: Colors.green,
+            size: 40,
+          );
+        } else {
+          return new Icon(
+            Icons.play_circle_outline,
+            color: Colors.white,
+            size: 40,
+          );
+        }
+      }
     }
   }
 
   setUpTimedFetch() async {
-    int timeToCall = 1000000;
-    var rs=await getCurrentMedia();
+    int timeToCall = 180000;
+    var rs = await getCurrentMedia();
     if (listCurrentMedia != null) {
-      if(!listCurrentMedia.isEmpty){
-        var now=new DateTime.now();
-        var checkTime=listCurrentMedia[0].timeEnd.difference(now);
-        if(checkTime.inMilliseconds>0){
-          timeToCall=checkTime.inMilliseconds;
+      if (!listCurrentMedia.isEmpty) {
+        var now = new DateTime.now();
+        var checkTime = listCurrentMedia[0].timeEnd.difference(now);
+        if (checkTime.inMilliseconds > 0) {
+          timeToCall = checkTime.inMilliseconds;
         }
-      }      
+      }
     }
     print(timeToCall);
     timerCallApi =
@@ -286,7 +290,9 @@ class _PlaylistInStoreState extends State<PlaylistInStoreView> {
   Future<String> getCurrentMedia() async {
     CurrentMediaRepository repo = CurrentMediaRepository();
     final rs = await repo.getCurrentMediabyStoreId(checkedInStore.Id);
-    listCurrentMedia = rs;
+    setState(() {
+      listCurrentMedia = rs;
+    });
     return "success";
   }
 }
